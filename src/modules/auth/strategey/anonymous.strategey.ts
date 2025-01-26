@@ -1,9 +1,9 @@
-import { Strategy } from 'passport-local';
+import { Strategy } from 'passport-anonymous';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class PublicStrategey extends PassportStrategy(Strategy, 'public') {
+export class PublicStrategey extends PassportStrategy(Strategy) {
     constructor() {
         super();
     }

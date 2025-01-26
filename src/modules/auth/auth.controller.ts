@@ -1,11 +1,12 @@
-import { Body, Controller, HttpCode, Logger, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Logger, Post, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
 
-import { SignUpDto } from './dto/signup.dto';
+
 import { AuthService } from './auth.service';
 import { reqUser } from './auth.decorator';
-import { User } from '@/user/entities/user.entity';
+import { User } from 'src/modules/user/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthRegisterDto } from './dto/auth-register.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,30 +14,29 @@ export class AuthController {
 
     constructor(
         private readonly authService: AuthService,
-    ) {
-    }
+    ) {}
 
-    @Post('/signup')
-    async SignUp(
-        @Body() signUpDto: SignUpDto
-    ) {
-        return await this.authService.signUp(signUpDto);
+    @HttpCode(HttpStatus.CREATED)
+    @Post('/register')
+    async register(
+        @Body() authRegisterDto: AuthRegisterDto
+    ): Promise<void> {
+        return await this.authService.register(authRegisterDto);
     }
 
     @UseGuards(AuthGuard('local'))
-    @HttpCode(200)
-    @Post('/signin')
-    async SignIn(
+    @HttpCode(HttpStatus.OK)
+    @Post('/login')
+    async login(
         @reqUser() user: User,
         @Res() res: Response
-    ) {
+    ): Promise<void> {
         const access_token = await this.authService.login(user);
 
         res.cookie('access_token', access_token, {
             httpOnly: true,
             secure: true,
         });
-
         res.send();
     }
 }

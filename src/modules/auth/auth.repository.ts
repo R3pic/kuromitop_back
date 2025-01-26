@@ -1,8 +1,9 @@
 import { PostgresService } from '@/common/database/postgres.service';
 import { Injectable, Logger } from '@nestjs/common';
-import { SignUpDto } from './dto/signup.dto';
 import { DatabaseError } from 'pg';
-import { User } from '@/user/entities/user.entity';
+import { User } from 'src/modules/user/entities/user.entity';
+import { AuthRegisterDto } from './dto/auth-register.dto';
+import { Password } from './entities/password.entity';
 
 @Injectable()
 export class AuthRepository {
@@ -10,7 +11,7 @@ export class AuthRepository {
 
     constructor(private readonly pool: PostgresService) {}
 
-    async create({ username, email, password }: SignUpDto): Promise<number> {
+    async create({ username, password }: AuthRegisterDto): Promise<number> {
         const client = await this.pool.getClient();
         try {
             await client.query('BEGIN');
@@ -19,8 +20,8 @@ export class AuthRepository {
             const userResult = await client.query<{ user_no: number }>(query, [username]);
             const { user_no } = userResult.rows[0];
 
-            query = 'INSERT INTO member.profile (user_no, email) VALUES ($1, $2)';
-            const profileResult = await client.query(query, [user_no, email]);
+            query = 'INSERT INTO member.profile (user_no) VALUES ($1)';
+            const profileResult = await client.query(query, [user_no]);
 
             query = 'INSERT INTO auth.password (user_no, password) VALUES ($1, $2)';
             const passwordResult = await client.query(query, [user_no, password]);
@@ -40,16 +41,16 @@ export class AuthRepository {
         }
     }
 
-    async getPassword(username: string) {
+    async getPassword(username: string): Promise<Password> {
         const client = await this.pool.getClient();
 
         try {
-            const query = `SELECT Password.password
+            const query = `SELECT Password.user_no, Password.password, Password.update_at
             FROM auth.password Password, member.user Member
             WHERE PASSWORD.user_no = Member.user_no
             AND Member.username = $1`;
-            const result = await client.query<{ password: string}>(query, [username]);
-            return result.rows[0]?.password || null;
+            const result = await client.query<Password>(query, [username]);
+            return result.rows[0] || null;
         } finally {
             client.release();
         }

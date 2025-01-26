@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from '@nestjs/config';
 
 import { validate } from '@/common/env.validator';
@@ -13,7 +13,7 @@ import { LoggerMiddleware } from '@/common/logger/logger.middleware';
         ConfigModule.forRoot({
             isGlobal: true,
             validate,
-            envFilePath: path.resolve(__dirname, '../.env'),
+            envFilePath: path.resolve(__dirname, '../../.env'),
         }),
         AuthModule, 
         UserModule,

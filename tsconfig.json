@@ -12,10 +12,11 @@
     "baseUrl": "./",
     "paths": {
       "@/common/*": ["src/common/*"],
-      "@/user/*": ["src/user/*"],
-      "@/auth/*": ["src/auth/*"]
+      "@/user/*": ["src/modules/user/*"],
+      "@/auth/*": ["src/modules/auth/*"]
     },
     "incremental": true,
+    "strict": false,
     "skipLibCheck": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
