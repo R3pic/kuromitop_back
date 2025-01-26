@@ -3,10 +3,10 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 
-import { validate } from '@common/env.validator';
+import { validate } from '@/common/env.validator';
 
 import * as path from 'node:path';
-import { LoggerMiddleware } from '@common/logger/logger.middleware';
+import { LoggerMiddleware } from '@/common/logger/logger.middleware';
 
 @Module({
     imports: [

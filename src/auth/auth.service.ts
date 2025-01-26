@@ -4,9 +4,9 @@ import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
 import { AuthRepository } from './auth.repository';
-import { CryptService } from '@common/crypt/crypt.service';
-import { UserService } from '@user/user.service';
-import { User } from '@user/entities/user.entity';
+import { CryptService } from '@/common/crypt/crypt.service';
+import { UserService } from '@/user/user.service';
+import { User } from '@/user/entities/user.entity';
 
 
 @Injectable()

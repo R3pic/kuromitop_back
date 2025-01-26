@@ -1,4 +1,4 @@
-import { PostgresService } from '@common/database/postgres.service';
+import { PostgresService } from '@/common/database/postgres.service';
 import { Injectable } from '@nestjs/common';
 import { Profile } from './entities/profile.entity';
 import { User } from './entities/user.entity';

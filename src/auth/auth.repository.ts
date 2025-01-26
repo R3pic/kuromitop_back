@@ -1,8 +1,8 @@
-import { PostgresService } from '@common/database/postgres.service';
+import { PostgresService } from '@/common/database/postgres.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { SignUpDto } from './dto/signup.dto';
 import { DatabaseError } from 'pg';
-import { User } from '@user/entities/user.entity';
+import { User } from '@/user/entities/user.entity';
 
 @Injectable()
 export class AuthRepository {

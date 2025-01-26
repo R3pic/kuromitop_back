@@ -4,8 +4,8 @@ import { SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
-import { documentFactory } from '@common/swagger/swagger.config';
-import { winstonLogger } from '@common/logger/winston.logger';
+import { documentFactory } from '@/common/swagger/swagger.config';
+import { winstonLogger } from '@/common/logger/winston.logger';
 
 async function bootstrap() {
     const logger = new Logger('Bootstrap');

@@ -1,5 +1,5 @@
 import { IsDefined, IsOptional, IsString, IsStrongPassword, Length, Matches, MaxLength } from 'class-validator';
-import { EMAIL, PASSWORD, USERNAME } from '@auth/constants';
+import { EMAIL, PASSWORD, USERNAME } from '@/auth/constants';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class SignUpDto {

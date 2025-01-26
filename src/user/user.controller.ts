@@ -1,8 +1,10 @@
 import { Controller, Get, Logger, NotFoundException, Param, UseGuards } from '@nestjs/common';
+
+import { reqUser } from '@/auth/auth.decorator';
+import { PublicGuard } from '@/auth/auth.guard';
+
 import { UserService } from './user.service';
-import { reqUser } from '@auth/auth.decorator';
 import { User } from './entities/user.entity';
-import { PublicGuard } from '@auth/auth.guard';
 
 @Controller('user')
 export class UserController {

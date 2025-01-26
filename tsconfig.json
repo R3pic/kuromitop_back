@@ -11,9 +11,9 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@common/*": ["src/common/*"],
-      "@user/*": ["src/user/*"],
-      "@auth/*": ["src/auth/*"]
+      "@/common/*": ["src/common/*"],
+      "@/user/*": ["src/user/*"],
+      "@/auth/*": ["src/auth/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
