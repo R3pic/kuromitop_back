@@ -12,7 +12,8 @@
     "baseUrl": "./",
     "paths": {
       "@common/*": ["src/common/*"],
-      "@user/*": ["src/user/*"]
+      "@user/*": ["src/user/*"],
+      "@auth/*": ["src/auth/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
