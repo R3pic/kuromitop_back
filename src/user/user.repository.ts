@@ -7,6 +7,18 @@ import { User } from './entities/user.entity';
 export class UserRepository {
     constructor(private readonly pool: PostgresService) {}
 
+    async isExistByUsername(username: string) {
+        const client = await this.pool.getClient();
+
+        try {
+            const query = 'SELECT EXISTS(SELECT 1 FROM member.user WHERE username = $1)';
+            const result = await client.query<{ exists: boolean }>(query, [username]);
+            return result.rows[0]?.exists || false;
+        } finally {
+            client.release();
+        }
+    }
+
     async getUserByUsername(username: string): Promise<User | null> {
         const client = await this.pool.getClient();
 
@@ -27,7 +39,7 @@ export class UserRepository {
             SELECT Member.username, Profile.nickname, Profile.thumbnail_url, Profile.introduction, Profile.email, Profile.birthday, Profile.auth_date
             FROM member.user Member, member.profile Profile
             WHERE Member.user_no = Profile.user_no
-            AND Member.user_name = $1;
+            AND Member.username = $1;
             `;
             const result = await client.query<Profile>(query, [userName]);
             return result.rows[0] || null;

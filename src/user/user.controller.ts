@@ -15,7 +15,7 @@ export class UserController {
         @reqUser() user: User,
         @Param('username') username: string,
     ) {
-        const targetUser = await this.userService.getByUsername(username);
+        const targetUser = await this.userService.getProfileByUsername(username);
 
         if (!targetUser)
             throw new NotFoundException('존재하지 않는 유저입니다.');

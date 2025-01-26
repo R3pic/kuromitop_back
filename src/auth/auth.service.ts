@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { SignUpDto } from './dto/signup.dto';
@@ -19,6 +19,11 @@ export class AuthService {
     ) {}
 
     async signUp(signUpDto: SignUpDto) {
+        const isExist = await this.userService.isExistByUsername(signUpDto.username);
+        if (isExist) {
+            throw new ConflictException('동일한 아이디가 존재합니다.');
+        }
+
         signUpDto.password = await this.cryptService.hashPassword(signUpDto.password);
 
         await this.authRepository.create(signUpDto);

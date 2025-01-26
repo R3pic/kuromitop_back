@@ -36,7 +36,7 @@ import { PublicStrategey } from './strategey/public.strategey';
         CryptService,
         LocalStrategy,
         JwtStrategy,
-        PublicStrategey
+        PublicStrategey,
     ],
     exports: [
         PassportModule,
