@@ -1,22 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
+import { documentFactory } from '@common/swagger/swagger.config';
+import { winstonLogger } from '@common/logger/winston.logger';
 
 async function bootstrap() {
     const logger = new Logger('Bootstrap');
 
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+        logger: winstonLogger
+    });
 
-    const config = new DocumentBuilder()
-        .setTitle('꾸러미탑 API ')
-        .setDescription('꾸러미탑 API')
-        .setVersion('0.1')
-        .build();
-    const documentFactory = () => SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, documentFactory);
+    SwaggerModule.setup('api-docs', app, documentFactory(app));
 
     app.use(cookieParser());
     app.enableCors({
