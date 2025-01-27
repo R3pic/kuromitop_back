@@ -24,7 +24,7 @@ export class AuthRepository {
             const profileResult = await client.query(query, [user_no]);
 
             query = 'INSERT INTO auth.password (user_no, password) VALUES ($1, $2)';
-            const passwordResult = await client.query(query, [user_no, password]);
+            const passwordResult = await client.query(query, [ user_no, password ]);
 
             await client.query('COMMIT');
 
@@ -35,8 +35,7 @@ export class AuthRepository {
                 this.logger.error(e.message);
             }
             throw e;
-        } 
-        finally {
+        } finally {
             client.release();
         }
     }

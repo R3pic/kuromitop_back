@@ -11,7 +11,7 @@ async function bootstrap() {
     const logger = new Logger('Bootstrap');
 
     const app = await NestFactory.create(AppModule, {
-        logger: winstonLogger
+        logger: winstonLogger,
     });
 
     SwaggerModule.setup('api-docs', app, documentFactory(app));

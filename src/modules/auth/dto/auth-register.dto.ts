@@ -1,4 +1,6 @@
-import { IsDefined, IsString, IsStrongPassword, Length, Matches } from 'class-validator';
+import {
+    IsDefined, IsString, IsStrongPassword, Length, Matches, 
+} from 'class-validator';
 import { PASSWORD, USERNAME } from 'src/modules/auth/constants';
 import { ApiProperty } from '@nestjs/swagger';
 

@@ -1,4 +1,8 @@
-import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+    ExecutionContext, 
+    Injectable, 
+    UnauthorizedException, 
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
@@ -21,7 +25,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 }
 
 @Injectable()
-export class OptionalAuthGuard extends AuthGuard(['jwt', 'anonymous']) {
+export class OptionalAuthGuard extends AuthGuard([ 'jwt', 'anonymous' ]) {
     constructor() {
         super();
     }

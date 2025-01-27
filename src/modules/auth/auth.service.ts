@@ -1,4 +1,6 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+    ConflictException, Injectable, UnauthorizedException, 
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { AuthRegisterDto } from './dto/auth-register.dto';

@@ -9,9 +9,7 @@ describe('UserService', () => {
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [
-                PostgresModule,
-            ],
+            imports: [PostgresModule],
             providers: [
                 UserService, 
                 UserRepository,

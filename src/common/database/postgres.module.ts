@@ -4,6 +4,6 @@ import { PostgresService } from './postgres.service';
 @Module({
     imports: [],
     providers: [PostgresService],
-    exports: [PostgresService]
+    exports: [PostgresService],
 })
 export class PostgresModule {}

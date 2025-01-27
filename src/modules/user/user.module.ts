@@ -6,9 +6,7 @@ import { UserService } from './user.service';
 import { UserRepository } from './user.repository';
 
 @Module({
-    imports: [
-        PostgresModule,
-    ],
+    imports: [PostgresModule],
     exports: [UserService],
     controllers: [UserController],
     providers: [

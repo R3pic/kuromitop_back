@@ -8,7 +8,7 @@ export const AUTH_API_MESSAGE = {
 export const USERNAME = {
     MIN_LENGTH: 5,
     MAX_LENGTH: 30,
-    MATCHES: /^[a-zA-Z][a-zA-Z0-9]*$/
+    MATCHES: /^[a-zA-Z][a-zA-Z0-9]*$/,
 };
 
 export const EMAIL = {
@@ -20,5 +20,5 @@ export const PASSWORD: IsStrongPasswordOptions = {
     minSymbols: 1,
     minUppercase: 0,
     minLowercase: 0,
-    minNumbers: 0
+    minNumbers: 0,
 };

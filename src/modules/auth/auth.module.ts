@@ -22,8 +22,8 @@ import { PublicStrategey } from './strategey/anonymous.strategey';
                 secret: configService.get<string>('JWT_SECRET'),
                 signOptions: {
                     expiresIn: '60s',
-                }
-            })
+                },
+            }),
         }),
         PassportModule,
         PostgresModule,
@@ -38,8 +38,6 @@ import { PublicStrategey } from './strategey/anonymous.strategey';
         JwtStrategy,
         PublicStrategey,
     ],
-    exports: [
-        PassportModule,
-    ]
+    exports: [PassportModule],
 })
 export class AuthModule {}
