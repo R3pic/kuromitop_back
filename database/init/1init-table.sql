@@ -1,4 +1,5 @@
 \c dev
+
 SET ROLE yehwan;
 
 CREATE SCHEMA IF NOT EXISTS music;
@@ -35,33 +36,32 @@ CREATE TABLE IF NOT EXISTS member.profile (
 );
 
 CREATE TABLE IF NOT EXISTS member.bundle (
-    bundle_id   INTEGER GENERATED ALWAYS AS IDENTITY,
+    uuid        UUID            NOT NULL    DEFAULT gen_random_uuid(),
     user_no     INTEGER         NOT NULL,
     title       VARCHAR(20)     NOT NULL,
+    is_private     BOOLEAN      NOT NULL,
     create_at   TIMESTAMPTZ     NOT NULL    DEFAULT now(),
-    PRIMARY KEY (bundle_id),
+    PRIMARY KEY (uuid),
     CONSTRAINT bundle_user_no_fk FOREIGN KEY (user_no) REFERENCES member.user(user_no)
 );
 
-CREATE TABLE IF NOT EXISTS member.favorite (
-    favorite_id INTEGER GENERATED ALWAYS AS IDENTITY,
-    user_no     INTEGER NOT NULL,
-    music_id    INTEGER NOT NULL,
-    bundle_id   INTEGER NOT NULL,
-    create_at   TIMESTAMPTZ     NOT NULL    DEFAULT now(),
-    PRIMARY KEY (favorite_id),
-    CONSTRAINT  favorite_user_no_fk FOREIGN KEY (user_no) REFERENCES member.user(user_no),
-    CONSTRAINT  favorite_music_id_fk FOREIGN KEY (music_id) REFERENCES music.info(music_id),
-    CONSTRAINT  favorite_bundle_id_fk FOREIGN KEY (bundle_id) REFERENCES member.bundle(bundle_id)
+CREATE TABLE IF NOT EXISTS music.bundle_music (
+    bundle_music_pk INTEGER         NOT NULL    GENERATED ALWAYS AS IDENTITY,
+    music_id        INTEGER         NOT NULL,
+    bundle_id       UUID            NOT NULL,
+    create_at       TIMESTAMPTZ     NOT NULL    DEFAULT now(),
+    PRIMARY KEY (bundle_music_pk),
+    CONSTRAINT  bundle_music_music_id_fk FOREIGN KEY (music_id) REFERENCES music.info(music_id),
+    CONSTRAINT  bundle_music_bundle_id_fk FOREIGN KEY (bundle_id) REFERENCES member.bundle(uuid) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS member.comments (
-    comments_id INTEGER GENERATED ALWAYS AS IDENTITY,
-    favorite_id INTEGER         NOT NULL,
+CREATE TABLE IF NOT EXISTS member.comment (
+    comment_id INTEGER                     GENERATED ALWAYS AS IDENTITY,
+    bundle_music_fk INTEGER         NOT NULL,
     comment     VARCHAR(250)    NOT NULL,
     create_at   TIMESTAMPTZ     NOT NULL    DEFAULT now(),
-    PRIMARY KEY (comments_id),
-    CONSTRAINT  comments_favorite_id_fk FOREIGN KEY (favorite_id) REFERENCES member.favorite(favorite_id)
+    PRIMARY KEY (comment_id),
+    CONSTRAINT  comment_bundle_music_fk FOREIGN KEY (bundle_music_fk) REFERENCES music.bundle_music(bundle_music_pk) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS auth.password (
