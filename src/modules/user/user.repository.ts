@@ -1,7 +1,8 @@
-import { PostgresService } from '@/common/database/postgres.service';
+import { PostgresService } from '@common/database/postgres.service';
 import { Injectable } from '@nestjs/common';
 import { Profile } from './entities/profile.entity';
 import { User } from './entities/user.entity';
+import { ExistsResult } from '@common/database/types';
 
 @Injectable()
 export class UserRepository {
@@ -25,8 +26,8 @@ export class UserRepository {
 
         try {
             const query = 'SELECT EXISTS(SELECT 1 FROM member.user WHERE username = $1)';
-            const result = await client.query<{ exists: boolean }>(query, [username]);
-            return result.rows[0]?.exists || false;
+            const result = await client.query<ExistsResult>(query, [username]);
+            return result.rows[0];
         } finally {
             client.release();
         }
@@ -49,7 +50,7 @@ export class UserRepository {
 
         try {
             const query = `
-            SELECT Profile.user_no, Profile.nickname, Profile.thumbnail_url, Profile.introduction, Profile.email, Profile.birthday, Profile.auth_date
+            SELECT Profile.user_no, Profile.nickname, Profile.thumbnail_url, Profile.introduction, Profile.email, Profile.birthday, Profile.create_at
             FROM member.user Member, member.profile Profile
             WHERE Member.user_no = Profile.user_no
             AND Member.username = $1;

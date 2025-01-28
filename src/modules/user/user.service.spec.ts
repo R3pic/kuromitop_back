@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { UserRepository } from './user.repository';
-import { PostgresModule } from '@/common/database/postgres.module';
+import { PostgresModule } from '@common/database/postgres.module';
 
 describe('UserService', () => {
     let service: UserService;

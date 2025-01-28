@@ -2,8 +2,8 @@ import {
     Controller, Get, Logger, Param, UseGuards, 
 } from '@nestjs/common';
 
-import { reqUser } from '@/auth/auth.decorator';
-import { OptionalAuthGuard } from '@/auth/auth.guard';
+import { reqUser } from '@auth/auth.decorator';
+import { OptionalAuthGuard } from '@auth/auth.guard';
 
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
@@ -21,12 +21,6 @@ export class UserController {
         @reqUser() user: User,
         @Param('username') username: string,
     ): Promise<AnonymousProfile | Profile> {
-        const profile = await this.userService.getProfile(username);
-
-        if (!user || profile.user_no !== user.user_no) {
-            return AnonymousProfile.of(profile);
-        }
-
-        return profile;
+        return await this.userService.getProfile(username, user);
     }
 }

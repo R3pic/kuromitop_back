@@ -1,16 +1,14 @@
-import {
-    ConflictException, Injectable, UnauthorizedException, 
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { AuthRegisterDto } from './dto/auth-register.dto';
 import { AuthUsernameLoginDto } from './dto/auth-username-login.dto';
-import { User } from '@/user/entities/user.entity';
+import { User } from '@user/entities/user.entity';
 
 import { AuthRepository } from './auth.repository';
-import { CryptService } from '@/common/crypt/crypt.service';
-import { UserService } from '@/user/user.service';
-import { AUTH_API_MESSAGE } from './constants';
+import { CryptService } from '@common/crypt/crypt.service';
+import { UserService } from '@user/user.service';
+import { AuthServiceException } from './exceptions';
 
 
 @Injectable()
@@ -23,10 +21,7 @@ export class AuthService {
     ) {}
 
     async register(signUpDto: AuthRegisterDto) {
-        const isExist = await this.userService.isExistByUsername(signUpDto.username);
-        if (isExist) {
-            throw new ConflictException(AUTH_API_MESSAGE.USER_ALREAY_EXIST);
-        }
+        await this.userService.isExistByUsername(signUpDto.username);
 
         signUpDto.password = await this.cryptService.hashPassword(signUpDto.password);
 
@@ -46,12 +41,12 @@ export class AuthService {
         const password = await this.authRepository.getPassword(authUsernameLoginDto.username);
 
         if (!password) 
-            throw new UnauthorizedException(AUTH_API_MESSAGE.INVALID_CREDENTIALS);
+            throw AuthServiceException.INVAILD_LOGIN_CREDENTIAL;
 
-        const isEqual = await this.cryptService.validate(password.password, authUsernameLoginDto.password);
+        const isEqual = await this.cryptService.comparePassword(password.password, authUsernameLoginDto.password);
 
         if (!isEqual) 
-            throw new UnauthorizedException(AUTH_API_MESSAGE.INVALID_CREDENTIALS);
+            throw AuthServiceException.INVAILD_LOGIN_CREDENTIAL;
 
         const user = await this.userService.findByNo(password.user_no);
 

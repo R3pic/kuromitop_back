@@ -7,11 +7,12 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from '@nestjs/config';
 
-import { validate } from '@/common/env.validator';
+import { validate } from '@common/env.validator';
 
 import * as path from 'node:path';
-import { LoggerMiddleware } from '@/common/logger/logger.middleware';
+import { LoggerMiddleware } from '@common/logger/logger.middleware';
 import { BundleModule } from './modules/bundle/bundle.module';
+import { MusicModule } from './modules/music/music.module';
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { BundleModule } from './modules/bundle/bundle.module';
         AuthModule, 
         UserModule,
         BundleModule,
+        MusicModule,
     ],
     exports: [],
     controllers: [],

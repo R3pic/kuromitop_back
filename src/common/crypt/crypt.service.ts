@@ -14,7 +14,7 @@ export class CryptService {
         return hashedPassword;
     }
 
-    async validate(hashedPassword: string, password: string) {
+    async comparePassword(hashedPassword: string, password: string) {
         return await bcrypt.compare(password, hashedPassword);
     }
 }

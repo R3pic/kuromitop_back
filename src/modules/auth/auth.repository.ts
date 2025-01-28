@@ -1,4 +1,4 @@
-import { PostgresService } from '@/common/database/postgres.service';
+import { PostgresService } from '@common/database/postgres.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseError } from 'pg';
 import { User } from 'src/modules/user/entities/user.entity';

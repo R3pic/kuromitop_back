@@ -1,5 +1,5 @@
 import { AuthService } from 'src/modules/auth/auth.service';
-import { EnvironmentVariables } from '@/common/env.validator';
+import { EnvironmentVariables } from '@common/env.validator';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';

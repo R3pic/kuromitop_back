@@ -31,7 +31,7 @@ export class AuthController {
     @Post('/login')
     async login(
         @reqUser() user: User,
-        @Res() res: Response
+        @Res({ passthrough: true }) res: Response
     ): Promise<void> {
         const access_token = await this.authService.login(user);
 
@@ -39,6 +39,5 @@ export class AuthController {
             httpOnly: true,
             secure: true,
         });
-        res.send();
     }
 }

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PostgresModule } from '@/common/database/postgres.module';
+import { PostgresModule } from '@common/database/postgres.module';
 
 import { UserController } from './user.controller';
 import { UserService } from './user.service';

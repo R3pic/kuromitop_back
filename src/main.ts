@@ -4,8 +4,9 @@ import { SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
-import { documentFactory } from '@/common/swagger/swagger.config';
-import { winstonLogger } from '@/common/logger/winston.logger';
+import { documentFactory } from '@common/swagger/swagger.config';
+import { winstonLogger } from '@common/logger/winston.logger';
+import { ServiceExceptionFilter } from '@common/exception/service-exception.filter';
 
 async function bootstrap() {
     const logger = new Logger('Bootstrap');
@@ -26,6 +27,7 @@ async function bootstrap() {
         forbidNonWhitelisted: true,
         whitelist: true,
     }));
+    app.useGlobalFilters(new ServiceExceptionFilter());
     await app.listen(process.env.PORT ?? 3000);
     logger.log('Application started');
 }
