@@ -11,9 +11,11 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@/common/*": ["src/common/*"],
-      "@/user/*": ["src/modules/user/*"],
-      "@/auth/*": ["src/modules/auth/*"]
+      "@common/*": ["src/common/*"],
+      "@user/*": ["src/modules/user/*"],
+      "@auth/*": ["src/modules/auth/*"],
+      "@bundle/*": ["src/modules/bundle/*"],
+      "@music/*": ["src/modules/music/*"]
     },
     "incremental": true,
     "strict": false,
@@ -22,6 +24,8 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,
+    "types": ["@types/jest"]
   }
 }
