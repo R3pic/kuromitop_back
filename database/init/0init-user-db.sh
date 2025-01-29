@@ -13,3 +13,20 @@ EOSQL
 else
     echo "User $DB_USER already exists. Skipping creation."
 fi
+
+# Check if test database exists
+DB_EXISTS=$(psql -tAc "SELECT 1 FROM pg_database WHERE datname='test'")
+if [ -z "$DB_EXISTS" ]; then
+    echo "Creating database test..."
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+        CREATE DATABASE test
+        WITH OWNER = 'yehwan'
+        ENCODING = 'UTF8'
+        LC_COLLATE = 'C'
+        LC_CTYPE = 'C'
+        TEMPLATE = template0;
+        GRANT ALL ON DATABASE test TO yehwan GRANTED BY postgres;
+EOSQL
+else
+    echo "Database test already exists. Skipping creation."
+fi

@@ -6,7 +6,7 @@ import type { Response } from 'express';
 
 import { AuthService } from './auth.service';
 import { reqUser } from './auth.decorator';
-import { User } from 'src/modules/user/entities/user.entity';
+import { User } from '@user/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthRegisterDto } from './dto/auth-register.dto';
 

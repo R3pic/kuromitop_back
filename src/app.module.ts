@@ -3,28 +3,23 @@ import {
     NestModule, 
     MiddlewareConsumer, 
 } from '@nestjs/common';
-import { AuthModule } from './modules/auth/auth.module';
-import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from '@nestjs/config';
-
-import { validate } from '@common/env.validator';
-
-import * as path from 'node:path';
+import { AuthModule } from '@auth/auth.module';
+import { UserModule } from '@user/user.module';
 import { LoggerMiddleware } from '@common/logger/logger.middleware';
-import { BundleModule } from './modules/bundle/bundle.module';
-import { MusicModule } from './modules/music/music.module';
+import { BundleModule } from '@bundle/bundle.module';
+import { MusicModule } from '@music/music.module';
+import { CommentsModule } from '@comments/comments.module';
+import { configModuleOptions } from '@common/env/env.config';
 
 @Module({
     imports: [
-        ConfigModule.forRoot({
-            isGlobal: true,
-            validate,
-            envFilePath: path.resolve(__dirname, '../../.env'),
-        }),
+        ConfigModule.forRoot(configModuleOptions),
         AuthModule, 
         UserModule,
         BundleModule,
         MusicModule,
+        CommentsModule,
     ],
     exports: [],
     controllers: [],

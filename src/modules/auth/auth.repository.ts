@@ -1,9 +1,10 @@
 import { PostgresService } from '@common/database/postgres.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseError } from 'pg';
-import { User } from 'src/modules/user/entities/user.entity';
+import { User } from '@user/entities/user.entity';
 import { AuthRegisterDto } from './dto/auth-register.dto';
 import { Password } from './entities/password.entity';
+import { RepositoryResult } from '@common/database/repository-result';
 
 @Injectable()
 export class AuthRepository {
@@ -11,24 +12,28 @@ export class AuthRepository {
 
     constructor(private readonly pool: PostgresService) {}
 
-    async create({ username, password }: AuthRegisterDto): Promise<number> {
+    async create({ username, password }: AuthRegisterDto): Promise<RepositoryResult<User>> {
         const client = await this.pool.getClient();
         try {
             await client.query('BEGIN');
 
-            let query = 'INSERT INTO member.user (username, login_type) VALUES ($1, 0) RETURNING user_no';
-            const userResult = await client.query<{ user_no: number }>(query, [username]);
-            const { user_no } = userResult.rows[0];
+            let query = 'INSERT INTO member.user (username, login_type) VALUES ($1, 0) RETURNING user_no, username';
+            const userResult = await client.query<User>(query, [username]);
+            const user = userResult.rows[0];
 
             query = 'INSERT INTO member.profile (user_no) VALUES ($1)';
-            const profileResult = await client.query(query, [user_no]);
+            const profileResult = await client.query(query, [user.user_no]);
 
             query = 'INSERT INTO auth.password (user_no, password) VALUES ($1, $2)';
-            const passwordResult = await client.query(query, [ user_no, password ]);
+            const passwordResult = await client.query(query, [ user.user_no, password ]);
 
             await client.query('COMMIT');
 
-            return (userResult.rowCount || 0) + (profileResult.rowCount || 0) + (passwordResult.rowCount || 0);
+            const rowCount = (userResult.rowCount || 0) 
+                            + (profileResult.rowCount || 0) 
+                            + (passwordResult.rowCount || 0);
+
+            return new RepositoryResult(user, rowCount);
         } catch(e) {
             if (e instanceof DatabaseError) {
                 await client.query('ROLLBACK');

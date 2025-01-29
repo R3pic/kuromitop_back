@@ -7,7 +7,7 @@ import { User } from '@user/entities/user.entity';
 import { Bundle } from './entities/bundle.entity';
 import { CreateBundleDto } from './dto/create-bundle.dto';
 import { UpdateBundleDto } from './dto/update-bundle.dto';
-import { ExistsResult } from '@common/database/types';
+import { ExistsResult } from '@common/database/repository-result';
 
 @Injectable()
 export class BundleRepository {

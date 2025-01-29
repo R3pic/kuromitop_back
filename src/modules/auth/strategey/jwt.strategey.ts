@@ -1,5 +1,5 @@
-import { AuthService } from 'src/modules/auth/auth.service';
-import { EnvironmentVariables } from '@common/env.validator';
+import { AuthService } from '@auth/auth.service';
+import { EnvironmentVariables } from '@common/env/env.validator';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
@@ -12,7 +12,7 @@ interface PayLoad {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    logger = new Logger('JwtStrategy');
+    logger = new Logger(JwtStrategy.name);
     constructor(
         private readonly authService: AuthService,
         private readonly configService: ConfigService<EnvironmentVariables, true>,

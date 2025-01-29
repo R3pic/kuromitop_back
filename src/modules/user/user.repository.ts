@@ -2,7 +2,8 @@ import { PostgresService } from '@common/database/postgres.service';
 import { Injectable } from '@nestjs/common';
 import { Profile } from './entities/profile.entity';
 import { User } from './entities/user.entity';
-import { ExistsResult } from '@common/database/types';
+import { ExistsResult } from '@common/database/repository-result';
+
 
 @Injectable()
 export class UserRepository {

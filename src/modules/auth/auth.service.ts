@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { AuthRegisterDto } from './dto/auth-register.dto';
@@ -13,6 +13,7 @@ import { AuthServiceException } from './exceptions';
 
 @Injectable()
 export class AuthService {
+    private readonly logger = new Logger(AuthService.name);
     constructor(
         private readonly authRepository: AuthRepository,
         private readonly userService: UserService,

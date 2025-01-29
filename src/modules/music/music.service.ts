@@ -51,4 +51,9 @@ export class MusicService {
 
         return result.music_id;
     }
+
+    async checkOwnerBybundleMusicId(bundleMusicId: number, user: User) {
+        const { is_owner } = await this.musicRepository.checkOwnerBybundleMusicId(bundleMusicId, user);
+        return is_owner;
+    }
 }

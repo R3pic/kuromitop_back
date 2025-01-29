@@ -5,6 +5,7 @@ import {
 
 export enum Environment {
     DEVELOPMENT = 'development',
+    TEST = 'test',
 }
 
 export class EnvironmentVariables {

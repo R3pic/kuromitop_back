@@ -1,7 +1,7 @@
 import {
     IsDefined, IsString, IsStrongPassword, Length, Matches, 
 } from 'class-validator';
-import { PASSWORD, USERNAME } from 'src/modules/auth/constants';
+import { PASSWORD, USERNAME } from '@auth/constants';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthRegisterDto {

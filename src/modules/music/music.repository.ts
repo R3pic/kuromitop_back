@@ -2,12 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseError } from 'pg';
 
 import { PostgresService } from '@common/database/postgres.service';
-import { ExistsResult } from '@common/database/types';
-
-import { CreateMusicDto } from './dto/create-music.dto';
 import { UUID } from 'crypto';
 import { MusicInfo } from './entities/music-info.entity';
 import { BundleMusic } from './entities/bundle-music.entity';
+import { User } from '@user/entities/user.entity';
+import { CreateMusicDto } from './dto/create-music.dto';
+import { ExistsResult, IsOwnerResult } from '@common/database/repository-result';
 
 @Injectable()
 export class MusicRepository {
@@ -16,6 +16,27 @@ export class MusicRepository {
     constructor(
         private readonly pool: PostgresService,
     ) {}
+
+    async checkOwnerBybundleMusicId(bundleMusicId: number, user: User) {
+        const client = await this.pool.getClient();
+
+        try {
+            const query = `
+            SELECT
+                CASE WHEN Bundle.user_no = $1 THEN TRUE ELSE FALSE END AS is_owner
+            FROM music.bundle_music BundleMusic, member.bundle Bundle
+            WHERE BundleMusic.bundle_id = Bundle.uuid
+            AND BundleMusic.bundle_music_pk = $2;
+            `;
+            const result = await client.query<IsOwnerResult>(query, [ 
+                user.user_no, 
+                bundleMusicId, 
+            ]);
+            return result.rows[0] || null;
+        } finally {
+            client.release();
+        }
+    }
 
     async create(musicId: number, bundleId: UUID) {
         const client = await this.pool.getClient();
