@@ -21,7 +21,10 @@ export class AuthService {
     ) {}
 
     async register(signUpDto: AuthRegisterDto) {
-        await this.userService.isExistByUsername(signUpDto.username);
+        const exists = await this.userService.isExistByUsername(signUpDto.username);
+
+        if (exists)
+            throw AuthServiceException.USERNAME_ALREADY_EXISTS;
 
         signUpDto.password = await this.cryptService.hashPassword(signUpDto.password);
 
@@ -50,6 +53,9 @@ export class AuthService {
 
         const user = await this.userService.findByNo(password.user_no);
 
-        return user;
+        return {
+            user_no: user.user_no,
+            username: user.username,
+        };
     }
 }

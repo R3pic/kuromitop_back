@@ -7,13 +7,16 @@ import { UpdateBundleDto } from './dto/update-bundle.dto';
 
 import { User } from '@user/entities/user.entity';
 import { UserService } from '@user/user.service';
+import { MusicService } from '@music/music.service';
 import { BundleServiceException } from './exception';
+import { AddMusicToBundleDto } from './dto/add-music-to-bundle.dto';
 
 @Injectable()
 export class BundleService {
     constructor(
         private readonly bundleRepository: BundleRepository,
         private readonly userService: UserService,
+        private readonly musicService: MusicService,
     ) {}
 
     async isExist(uuid: UUID) {
@@ -35,6 +38,23 @@ export class BundleService {
         return await this.bundleRepository.create(createBundleDto, user);
     }
 
+    async addMusicToBundle(uuid: UUID, addMusicToBundleDto: AddMusicToBundleDto, user: User) {
+        await this.checkOwner(uuid, user);
+
+        await this.musicService.createBundleMusic(addMusicToBundleDto, uuid);
+    }
+
+    async findManyMusicByBundle(uuid: UUID, user: User) {
+        const bundle = await this.findOnebyUUID(uuid);
+
+        if (bundle.is_private && bundle.user_no !== user.user_no)
+            throw BundleServiceException.BUNDLE_FORBIDDEN;
+
+        const bundleMusics = this.musicService.findManyByBundleUUID(uuid);
+
+        return bundleMusics;
+    }
+
     async findMany(username: string, user: User) {
         const targetuser = await this.userService.getByUsername(username);
 
@@ -46,10 +66,7 @@ export class BundleService {
 
         return bundles.filter((bundle) => {
             if (bundle.is_private) {
-                if (!user)
-                    return false;
-
-                if (user.username !== username)
+                if (!user || user.username !== username)
                     return false;
             }
         

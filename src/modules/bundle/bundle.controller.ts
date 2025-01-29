@@ -13,8 +13,9 @@ import { UUIDParam } from '@common/decorator/UUIDParam.decorator';
 import { JwtAuthGuard, OptionalAuthGuard } from '@auth/auth.guard';
 import { reqUser } from '@auth/auth.decorator';
 import { User } from '@user/entities/user.entity';
+import { AddMusicToBundleDto } from './dto/add-music-to-bundle.dto';
 
-@Controller('bundle')
+@Controller('bundles')
 export class BundleController {
     constructor(private readonly bundleService: BundleService) {}
 
@@ -52,7 +53,31 @@ export class BundleController {
     @UseGuards(JwtAuthGuard)
     @Delete(':uuid')
     @HttpCode(HttpStatus.OK)
-    remove(@UUIDParam('uuid') uuid: UUID) {
+    remove(
+        @UUIDParam('uuid') uuid: UUID,
+        @reqUser() user: User
+    ) {
         return this.bundleService.remove(uuid, user);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get(':uuid/musics')
+    @HttpCode(HttpStatus.OK)
+    getMusicsByBundle(
+        @UUIDParam('uuid') uuid: UUID,
+        @reqUser() user: User
+    ) {
+        return this.bundleService.findManyMusicByBundle(uuid, user);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post(':uuid/musics')
+    @HttpCode(HttpStatus.OK)
+    add(
+        @UUIDParam('uuid') uuid: UUID,
+        @Body() addMusicToBundleDto: AddMusicToBundleDto,
+        @reqUser() user: User
+    ) {
+        return this.bundleService.addMusicToBundle(uuid, addMusicToBundleDto, user);
     }
 }

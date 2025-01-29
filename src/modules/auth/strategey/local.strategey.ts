@@ -1,7 +1,8 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AuthService } from 'src/modules/auth/auth.service';
+import { AuthServiceException } from '@auth/exceptions';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -13,7 +14,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         const user = await this.authService.validateLogin({ username, password });
 
         if (!user) {
-            throw new UnauthorizedException('아이디 또는 비밀번호를 확인해주세요.');
+            throw AuthServiceException.INVAILD_LOGIN_CREDENTIAL;
         }
         
         return user;

@@ -1,12 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreateMusicDto } from './dto/create-music.dto';
 import { UUID } from 'crypto';
-import { BundleService } from '@bundle/bundle.service';
 import { MusicRepository } from './music.repository';
-import { User } from '@user/entities/user.entity';
 import { PostgresError } from 'pg-error-enum';
 import { isDataBaseError } from '@common/exception/utils';
 import { MusicServiceExeception } from './exception';
+import { CreateMusicDto } from './dto/create-music.dto';
+import { User } from '@user/entities/user.entity';
 
 @Injectable()
 export class MusicService {
@@ -14,13 +13,11 @@ export class MusicService {
     
     constructor(
         private readonly musicRepository: MusicRepository,
-        private readonly bundleService: BundleService,
     ) {}
 
-    async createBundleMusic(createMusicDto: CreateMusicDto, uuid: UUID, user: User) {
+    async createBundleMusic(createMusicDto: CreateMusicDto, uuid: UUID) {
         try {
             const musicId = await this.createInfoIfNotExists(createMusicDto);
-            await this.bundleService.checkOwner(uuid, user);
             await this.musicRepository.create(musicId, uuid);
         } catch (e) {
             if (isDataBaseError(e)
@@ -31,13 +28,13 @@ export class MusicService {
         }
     }
 
-    async findManyByBundle(uuid: UUID, user: User) {
-        await this.bundleService.isExist(uuid);
-        await this.bundleService.checkOwner(uuid, user);
-
+    async findManyByBundleUUID(uuid: UUID) {
         const bundlemusics = this.musicRepository.findManyBundleMusicByBundleUUID(uuid);
-
         return bundlemusics;
+    }
+
+    findManyRecent(user: User) {
+        throw new Error(`${JSON.stringify(user)} Method not Implemnted`);
     }
 
     async remove(bundleMusicId: number) {

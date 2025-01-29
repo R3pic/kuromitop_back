@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { AnonymousProfile } from './dto/anonymous-profile.dto';
 import { User } from './entities/user.entity';
@@ -6,6 +6,7 @@ import { UserServiceException } from './exceptions';
 
 @Injectable()
 export class UserService {
+    private readonly logger = new Logger(UserService.name);
     constructor(private readonly userRepository: UserRepository) {}
 
     async findByNo(no: number) {
@@ -20,10 +21,7 @@ export class UserService {
 
     async isExistByUsername(username: string) {
         const { exists } = await this.userRepository.isExistByUsername(username);
-        
-        if (!exists) {
-            throw UserServiceException.USER_NOT_FOUND;
-        }
+        return exists;
     }
 
     async getByUsername(username: string) {

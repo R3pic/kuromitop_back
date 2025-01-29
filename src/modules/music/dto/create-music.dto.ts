@@ -1,9 +1,10 @@
 import {
-    IsDefined, IsString, IsUrl,
+    IsDefined, 
+    IsString, 
+    IsUrl, 
 } from 'class-validator';
 
 export class CreateMusicDto {
-
     @IsDefined()
     @IsUrl()
     external_url: string;
