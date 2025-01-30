@@ -67,7 +67,7 @@ export class BundleController {
         @UUIDParam('uuid') uuid: UUID,
         @reqUser() user: User
     ) {
-        return this.bundleService.findManyMusicByBundle(uuid, user);
+        return this.bundleService.findManyBundleMusicByBundle(uuid, user);
     }
 
     @UseGuards(JwtAuthGuard)

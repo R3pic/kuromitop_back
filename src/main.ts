@@ -32,4 +32,4 @@ async function bootstrap() {
     logger.log('Application started');
 }
 
-bootstrap();
+void bootstrap();

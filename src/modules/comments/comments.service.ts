@@ -4,6 +4,7 @@ import { User } from '@user/entities/user.entity';
 import { CommentsRepository } from './comments.repository';
 import { MusicService } from '@music/music.service';
 import { CommentServiceException } from './exceptions';
+import { Transactional } from '@nestjs-cls/transactional';
 
 @Injectable()
 export class CommentsService {
@@ -13,41 +14,33 @@ export class CommentsService {
         private readonly musicService: MusicService,
     ) {}
 
+    @Transactional()
     async create(createCommentDto: CreateCommentDto, user: User) {
-        const isOwner = await this.musicService.checkOwnerBybundleMusicId(createCommentDto.bundle_music_fk, user);
-
-        if (!isOwner) {
-            throw CommentServiceException.COMMENT_FORBIDDEN;
-        }
+        await this.musicService.checkOwnerBybundleMusicId(createCommentDto.bundle_music_fk, user);
 
         const comment = await this.commentRepository.create(createCommentDto); 
 
-        this.logger.log(`새로운 코멘트 생성됨 : ${JSON.stringify(comment)}`);
         return comment;
     }
 
     async findManyByBundleMusicId(bundleMusicId: number, user: User) {
-        const isOwner = await this.musicService.checkOwnerBybundleMusicId(bundleMusicId, user);
-        
-        if (!isOwner) {
-            throw CommentServiceException.COMMENT_FORBIDDEN;
-        }
+        await this.musicService.checkOwnerBybundleMusicId(bundleMusicId, user);
 
         return await this.commentRepository.findManyByBundleMusicId(bundleMusicId);
     }
 
+    @Transactional()
     async remove(commentId: number, user: User) {
-        const isOwner = await this.checkOwner(commentId, user);
-
-        if (!isOwner) {
-            throw CommentServiceException.COMMENT_FORBIDDEN;
-        }
+        await this.checkOwner(commentId, user);
 
         return await this.commentRepository.remove(commentId);
     }
 
     async checkOwner(commentId: number, user: User) {
-        const { is_owner } = await this.commentRepository.checkOwnerByCommentId(commentId, user);
-        return is_owner; 
+        const isOwner = await this.commentRepository.checkOwnerByCommentId(commentId, user.user_no);
+        
+        if (!isOwner) {
+            throw CommentServiceException.COMMENT_FORBIDDEN;
+        }
     }
 }

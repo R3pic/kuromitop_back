@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@nestjs-cls/transactional':
+        specifier: ^2.4.6
+        version: 2.4.6(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(nestjs-cls@5.0.1(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs-cls/transactional-adapter-pg-promise':
+        specifier: ^1.3.8
+        version: 1.3.8(@nestjs-cls/transactional@2.4.6(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(nestjs-cls@5.0.1(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(reflect-metadata@0.2.2)(rxjs@7.8.1))(nestjs-cls@5.0.1(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(pg-promise@11.10.2(pg-query-stream@4.7.1(pg@8.13.1)))
       '@nestjs/common':
         specifier: ^11.0.1
         version: 11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -44,6 +50,9 @@ importers:
       nest-winston:
         specifier: ^1.10.2
         version: 1.10.2(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(winston@3.17.0)
+      nestjs-cls:
+        specifier: ^5.0.1
+        version: 5.0.1(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       passport:
         specifier: ^0.7.0
         version: 0.7.0
@@ -62,6 +71,9 @@ importers:
       pg-error-enum:
         specifier: ^0.7.3
         version: 0.7.3
+      pg-promise:
+        specifier: ^11.10.2
+        version: 11.10.2(pg-query-stream@4.7.1(pg@8.13.1))
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -141,6 +153,9 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.10.10)(ts-node@10.9.2(@swc/core@1.10.9)(@types/node@22.10.10)(typescript@5.7.3))
+      jest-mock-extended:
+        specifier: 4.0.0-beta1
+        version: 4.0.0-beta1(@jest/globals@29.7.0)(jest@29.7.0(@types/node@22.10.10)(ts-node@10.9.2(@swc/core@1.10.9)(@types/node@22.10.10)(typescript@5.7.3)))(typescript@5.7.3)
       prettier:
         specifier: ^3.4.2
         version: 3.4.2
@@ -737,6 +752,24 @@ packages:
   '@napi-rs/nice@1.0.1':
     resolution: {integrity: sha512-zM0mVWSXE0a0h9aKACLwKmD6nHcRiKrPpCfvaKqG1CqDEyjEawId0ocXxVzPMCAm6kkWr2P025msfxXEnt8UGQ==}
     engines: {node: '>= 10'}
+
+  '@nestjs-cls/transactional-adapter-pg-promise@1.3.8':
+    resolution: {integrity: sha512-q9EXhQgQdidUOcHSIbgl0LeGpGobWOHG370cJ76E97CaEj5wtYNiZTdspkxb4BLFFf/427VVTt9vXhJP1aeiuw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@nestjs-cls/transactional': ^2.4.6
+      nestjs-cls: ^5.0.1
+      pg-promise: ^11
+
+  '@nestjs-cls/transactional@2.4.6':
+    resolution: {integrity: sha512-K7gFclhuf7zRi38mwoSeWO3oayrq+b4VPILe9ANdqGfMWtjZ1ym/hULT1Md21ASVGeWjT3CQMHTXxXRyH71apA==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      '@nestjs/common': '>= 11 < 12'
+      '@nestjs/core': '>= 11 < 12'
+      nestjs-cls: ^5.0.1
+      reflect-metadata: '*'
+      rxjs: '>= 7'
 
   '@nestjs/cli@11.0.2':
     resolution: {integrity: sha512-y1dKk+Q94vnWhJe8eoz1Qs5WIYHSgO0xZttsFnDbYW1A6CBUVanc4RocbiyhwC/GjWPO4D5JmTXjW5mRH6wprA==}
@@ -1428,6 +1461,10 @@ packages:
 
   asap@2.0.6:
     resolution: {integrity: sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==}
+
+  assert-options@0.8.2:
+    resolution: {integrity: sha512-XaXoMxY0zuwAb0YuZjxIm8FeWvNq0aWNIbrzHhFjme8Smxw4JlPoyrAKQ6808k5UvQdhvnWqHZCphq5mXd4TDA==}
+    engines: {node: '>=10.0.0'}
 
   async@3.2.6:
     resolution: {integrity: sha512-htCUDlxyyCLMgaM3xXg0C0LW2xqfuQ6p05pCEIsXuyQ+a1koYKTuBMzRNwmybfLgvJDMd0r1LTn4+E0Ti6C2AA==}
@@ -2553,6 +2590,13 @@ packages:
     resolution: {integrity: sha512-GBEV4GRADeP+qtB2+6u61stea8mGcOT4mCtrYISZwfu9/ISHFJ/5zOMXYbpBE9RsS5+Gb63DW4FgmnKJ79Kf6w==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
+  jest-mock-extended@4.0.0-beta1:
+    resolution: {integrity: sha512-MYcI0wQu3ceNhqKoqAJOdEfsVMamAFqDTjoLN5Y45PAG3iIm4WGnhOu0wpMjlWCexVPO71PMoNir9QrGXrnIlw==}
+    peerDependencies:
+      '@jest/globals': ^28.0.0 || ^29.0.0
+      jest: ^24.0.0 || ^25.0.0 || ^26.0.0 || ^27.0.0 || ^28.0.0 || ^29.0.0
+      typescript: ^3.0.0 || ^4.0.0 || ^5.0.0
+
   jest-mock@29.7.0:
     resolution: {integrity: sha512-ITOMZn+UkYS4ZFh83xYAOzWStloNzJFO2s8DWrE4lhtGD+AorgnbkiKERe4wQVBydIGPx059g6riW5Btp6Llnw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -2929,6 +2973,15 @@ packages:
       '@nestjs/common': ^5.0.0 || ^6.6.0 || ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
       winston: ^3.0.0
 
+  nestjs-cls@5.0.1:
+    resolution: {integrity: sha512-TA1qkFkkWct1LXXjcNk4jxQgvZrL34bojK3D4oOo59ru7xrQ1erN3/737T+XezOZ2ZPngGVeJZ9WipaD9N+G0Q==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      '@nestjs/common': '>= 11 < 12'
+      '@nestjs/core': '>= 11 < 12'
+      reflect-metadata: '*'
+      rxjs: '>= 7'
+
   node-abort-controller@3.1.1:
     resolution: {integrity: sha512-AGK2yQKIjRuqnc6VkX2Xj5d+QW8xZ87pa1UK6yA6ouUyuxfHuMP6umE5QK7UmTeOAymo+Zx1Fxiuw9rVx8taHQ==}
 
@@ -3112,12 +3165,21 @@ packages:
   pg-connection-string@2.7.0:
     resolution: {integrity: sha512-PI2W9mv53rXJQEOb8xNR8lH7Hr+EKa6oJa38zsK0S/ky2er16ios1wLKhZyxzD7jUReiWokc9WK5nxSnC7W1TA==}
 
+  pg-cursor@2.12.1:
+    resolution: {integrity: sha512-V13tEaA9Oq1w+V6Q3UBIB/blxJrwbbr35/dY54r/86soBJ7xkP236bXaORUTVXUPt9B6Ql2BQu+uwQiuMfRVgg==}
+    peerDependencies:
+      pg: ^8
+
   pg-error-enum@0.7.3:
     resolution: {integrity: sha512-yvAU2GIP67NARQI6C1moniiPLzz1FH2hwsgrnk0cf3CbcO9SIK6FwAkTD6CtWPOCsxfdMs3qAdb0zS/szeCMhQ==}
 
   pg-int8@1.0.1:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
     engines: {node: '>=4.0.0'}
+
+  pg-minify@1.6.5:
+    resolution: {integrity: sha512-u0UE8veaCnMfJmoklqneeBBopOAPG3/6DHqGVHYAhz8DkJXh9dnjPlz25fRxn4e+6XVzdOp7kau63Rp52fZ3WQ==}
+    engines: {node: '>=14.0.0'}
 
   pg-numeric@1.0.2:
     resolution: {integrity: sha512-BM/Thnrw5jm2kKLE5uJkXqqExRUY/toLHda65XgFTBTFYZyopbKjBe29Ii3RbkvlsMoFwD+tHeGaCjjv0gHlyw==}
@@ -3128,8 +3190,19 @@ packages:
     peerDependencies:
       pg: '>=8.0'
 
+  pg-promise@11.10.2:
+    resolution: {integrity: sha512-wK4yjxZdfxBmAMcs40q6IsC1SOzdLilc1yNvJqlbOjtm2syayqLDCt1JQ9lhS6yNSgVlGOQZT88yb/SADJmEBw==}
+    engines: {node: '>=14.0'}
+    peerDependencies:
+      pg-query-stream: 4.7.1
+
   pg-protocol@1.7.0:
     resolution: {integrity: sha512-hTK/mE36i8fDDhgDFjy6xNOG+LCorxLG3WO17tku+ij6sVHXh1jQUJ8hYAnRhNla4QVD2H8er/FOjc/+EgC6yQ==}
+
+  pg-query-stream@4.7.1:
+    resolution: {integrity: sha512-UMgsgn/pOIYsIifRySp59vwlpTpLADMK9HWJtq5ff0Z3MxBnPMGnCQeaQl5VuL+7ov4F96mSzIRIcz+Duo6OiQ==}
+    peerDependencies:
+      pg: ^8
 
   pg-types@2.2.0:
     resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
@@ -3490,6 +3563,10 @@ packages:
     resolution: {integrity: sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==}
     engines: {node: '>= 8'}
 
+  spex@3.4.0:
+    resolution: {integrity: sha512-8JeZJ7QlEBnSj1W1fKXgbB2KUPA8k4BxFMf6lZX/c1ZagU/1b9uZWZK0yD6yjfzqAIuTNG4YlRmtMpQiXuohsg==}
+    engines: {node: '>=14.0.0'}
+
   split2@4.2.0:
     resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
     engines: {node: '>= 10.x'}
@@ -3681,6 +3758,14 @@ packages:
     engines: {node: '>=18.12'}
     peerDependencies:
       typescript: '>=4.8.4'
+
+  ts-essentials@10.0.4:
+    resolution: {integrity: sha512-lwYdz28+S4nicm+jFi6V58LaAIpxzhg9rLdgNC1VsdP/xiFBseGhF1M/shwCk6zMmwahBZdXcl34LVHrEang3A==}
+    peerDependencies:
+      typescript: '>=4.5.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   ts-jest@29.2.5:
     resolution: {integrity: sha512-KD8zB2aAZrcKIdGk4OwpJggeLcH1FgrICqDSROWqlnJXGCXK4Mn6FcdK2B6670Xr73lHMG1kHw8R87A0ecZ+vA==}
@@ -4674,6 +4759,20 @@ snapshots:
       '@napi-rs/nice-win32-x64-msvc': 1.0.1
     optional: true
 
+  '@nestjs-cls/transactional-adapter-pg-promise@1.3.8(@nestjs-cls/transactional@2.4.6(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(nestjs-cls@5.0.1(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(reflect-metadata@0.2.2)(rxjs@7.8.1))(nestjs-cls@5.0.1(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(pg-promise@11.10.2(pg-query-stream@4.7.1(pg@8.13.1)))':
+    dependencies:
+      '@nestjs-cls/transactional': 2.4.6(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(nestjs-cls@5.0.1(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      nestjs-cls: 5.0.1(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      pg-promise: 11.10.2(pg-query-stream@4.7.1(pg@8.13.1))
+
+  '@nestjs-cls/transactional@2.4.6(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(nestjs-cls@5.0.1(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(reflect-metadata@0.2.2)(rxjs@7.8.1)':
+    dependencies:
+      '@nestjs/common': 11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/core': 11.0.5(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      nestjs-cls: 5.0.1(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      reflect-metadata: 0.2.2
+      rxjs: 7.8.1
+
   '@nestjs/cli@11.0.2(@swc/cli@0.6.0(@swc/core@1.10.9)(chokidar@4.0.3))(@swc/core@1.10.9)(@types/node@22.10.10)':
     dependencies:
       '@angular-devkit/core': 19.1.3(chokidar@4.0.3)
@@ -5469,6 +5568,8 @@ snapshots:
   array-union@2.1.0: {}
 
   asap@2.0.6: {}
+
+  assert-options@0.8.2: {}
 
   async@3.2.6: {}
 
@@ -6731,6 +6832,13 @@ snapshots:
       slash: 3.0.0
       stack-utils: 2.0.6
 
+  jest-mock-extended@4.0.0-beta1(@jest/globals@29.7.0)(jest@29.7.0(@types/node@22.10.10)(ts-node@10.9.2(@swc/core@1.10.9)(@types/node@22.10.10)(typescript@5.7.3)))(typescript@5.7.3):
+    dependencies:
+      '@jest/globals': 29.7.0
+      jest: 29.7.0(@types/node@22.10.10)(ts-node@10.9.2(@swc/core@1.10.9)(@types/node@22.10.10)(typescript@5.7.3))
+      ts-essentials: 10.0.4(typescript@5.7.3)
+      typescript: 5.7.3
+
   jest-mock@29.7.0:
     dependencies:
       '@jest/types': 29.6.3
@@ -7158,6 +7266,13 @@ snapshots:
       fast-safe-stringify: 2.1.1
       winston: 3.17.0
 
+  nestjs-cls@5.0.1(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1):
+    dependencies:
+      '@nestjs/common': 11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/core': 11.0.5(@nestjs/common@11.0.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@11.0.5)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      reflect-metadata: 0.2.2
+      rxjs: 7.8.1
+
   node-abort-controller@3.1.1: {}
 
   node-addon-api@5.1.0: {}
@@ -7322,9 +7437,15 @@ snapshots:
 
   pg-connection-string@2.7.0: {}
 
+  pg-cursor@2.12.1(pg@8.13.1):
+    dependencies:
+      pg: 8.13.1
+
   pg-error-enum@0.7.3: {}
 
   pg-int8@1.0.1: {}
+
+  pg-minify@1.6.5: {}
 
   pg-numeric@1.0.2: {}
 
@@ -7332,7 +7453,22 @@ snapshots:
     dependencies:
       pg: 8.13.1
 
+  pg-promise@11.10.2(pg-query-stream@4.7.1(pg@8.13.1)):
+    dependencies:
+      assert-options: 0.8.2
+      pg: 8.13.1
+      pg-minify: 1.6.5
+      pg-query-stream: 4.7.1(pg@8.13.1)
+      spex: 3.4.0
+    transitivePeerDependencies:
+      - pg-native
+
   pg-protocol@1.7.0: {}
+
+  pg-query-stream@4.7.1(pg@8.13.1):
+    dependencies:
+      pg: 8.13.1
+      pg-cursor: 2.12.1(pg@8.13.1)
 
   pg-types@2.2.0:
     dependencies:
@@ -7689,6 +7825,8 @@ snapshots:
 
   source-map@0.7.4: {}
 
+  spex@3.4.0: {}
+
   split2@4.2.0: {}
 
   sprintf-js@1.0.3: {}
@@ -7882,6 +8020,10 @@ snapshots:
 
   ts-api-utils@2.0.0(typescript@5.7.3):
     dependencies:
+      typescript: 5.7.3
+
+  ts-essentials@10.0.4(typescript@5.7.3):
+    optionalDependencies:
       typescript: 5.7.3
 
   ts-jest@29.2.5(@babel/core@7.26.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.0))(jest@29.7.0(@types/node@22.10.10)(ts-node@10.9.2(@swc/core@1.10.9)(@types/node@22.10.10)(typescript@5.7.3)))(typescript@5.7.3):

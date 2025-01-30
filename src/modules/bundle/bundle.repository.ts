@@ -1,148 +1,103 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DatabaseError } from 'pg';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPgPromise } from '@nestjs-cls/transactional-adapter-pg-promise';
 import { UUID } from 'crypto';
 
-import { PostgresService } from '@common/database/postgres.service';
-import { User } from '@user/entities/user.entity';
+import { IsExists } from '@common/database/results';
+
 import { Bundle } from './entities/bundle.entity';
 import { CreateBundleDto } from './dto/create-bundle.dto';
 import { UpdateBundleDto } from './dto/update-bundle.dto';
-import { ExistsResult } from '@common/database/repository-result';
+import { BundleMusicItem } from './entities/bundle-music-item.entity';
 
 @Injectable()
 export class BundleRepository {
     private readonly logger = new Logger(BundleRepository.name);
 
     constructor(
-        private readonly pool: PostgresService,
+        private readonly txHost: TransactionHost<TransactionalAdapterPgPromise>,
     ) {}
 
-    async isExist(uuid: UUID): Promise<ExistsResult> {
-        const client = await this.pool.getClient();
-    
-        try {
-            const query = 'SELECT EXISTS(SELECT 1 FROM member.bundle WHERE uuid = $1)';;
-            const result = await client.query<ExistsResult>(query, [uuid]);
-            return result.rows[0];
-        } finally {
-            client.release();
-        }
+    async isExist(uuid: UUID) {
+        const query = 'SELECT EXISTS(SELECT 1 FROM member.bundle WHERE uuid = $1)';;
+        const result = await this.txHost.tx.one<IsExists>(query, [uuid]);
+        return result.exists;
     }
 
-    async create(createBundleDto: CreateBundleDto, user: User) {
-        const client = await this.pool.getClient();
-
-        try {
-            const query = `
+    async create(createBundleDto: CreateBundleDto, user_no: number) {
+        const query = `
             INSERT INTO member.bundle (user_no, title, is_private)
             VALUES ($1, $2, $3)
+            RETURNING user_no, uuid, title, is_private
             `;
 
-            await client.query('BEGIN');
-            const result = await client.query(query, [
-                user.user_no, 
-                createBundleDto.title, 
-                createBundleDto.is_private,
-            ]);
-            await client.query('COMMIT');
+        const result = await this.txHost.tx.one<Bundle>(query, [
+            user_no, 
+            createBundleDto.title, 
+            createBundleDto.is_private,
+        ]);
 
-            return result.rowCount || 0;
-        } catch (e) {
-            if (e instanceof DatabaseError) {
-                await client.query('ROLLBACK');
-                this.logger.error(e.message);
-            }
-            throw e;
-        } finally {
-            client.release();
-        }
+        return result;
     }
 
-    async findManyByUser(user: User) {
-        const client = await this.pool.getClient();
-
-        try {
-            const query = `
+    async findManyByUsername(username: string) {
+        const query = `
             SELECT uuid, title, is_private
-            FROM member.bundle
-            WHERE user_no = $1
+            FROM member.bundle Bundle, member.user Member
+            WHERE Bundle.user_no = Member.user_no
+            AND Member.username = $1
             `;
-            const result = await client.query<Omit<Bundle, 'user_no'>>(query, [user.user_no]);
-            return result.rows || null;
-        } finally {
-            client.release();
-        }
+        const bundles = await this.txHost.tx.manyOrNone<Omit<Bundle, 'user_no'>>(query, [username]);
+        return bundles;
     }
 
-    async fineOneByUUID(uuid: UUID): Promise<Bundle | null> {
-        const client = await this.pool.getClient();
+    async findManyBundleMusicItemByBundleUUID(uuid: UUID) {
+        const query = `
+            SELECT BundleMusic.bundle_music_pk, MusicInfo.external_url, MusicInfo.title, MusicInfo.artist, MusicInfo.thumbnail
+            FROM music.info MusicInfo, music.bundle_music BundleMusic
+            WHERE MusicInfo.music_id = BundleMusic.music_id
+            AND BundleMusic.bundle_id = $1
+            `;
+        const bundleMusics = await this.txHost.tx.manyOrNone<BundleMusicItem>(query, [uuid]);
+        return bundleMusics;
+    }
 
-        try {
-            const query = `
+    async findOneByUUID(uuid: UUID) {
+        const query = `
             SELECT user_no, uuid, title, is_private
             FROM member.bundle
             WHERE uuid = $1
             `;
-            const result = await client.query<Bundle>(query, [uuid]);
-            return result.rows[0] || null;
-        } finally {
-            client.release();
-        }
+        const bundle = await this.txHost.tx.oneOrNone<Bundle>(query, [uuid]);
+        return bundle;
     }
 
-    async update(uuid: UUID, updateBundleDto: UpdateBundleDto): Promise<number> {
-        const client = await this.pool.getClient();
-
-        try {
-            const query = `
+    async update(uuid: UUID, updateBundleDto: UpdateBundleDto) {
+        const query = `
             UPDATE member.bundle
             SET title = $1, is_private = $2
             WHERE uuid = $3
+            RETURNING user_no, uuid, title, is_private
             `;
 
-            await client.query('BEGIN');
-            const result = await client.query(query, [
-                updateBundleDto.title,
-                updateBundleDto.is_private,
-                uuid,
-            ]);
-            await client.query('COMMIT');
-
-            return result.rowCount || 0;
-        } catch (e) {
-            if (e instanceof DatabaseError) {
-                await client.query('ROLLBACK');
-                this.logger.error(e.message);
-            }
-            throw e;
-        } finally {
-            client.release();
-        }
+        const bundle = await this.txHost.tx.one<Bundle>(query, [
+            updateBundleDto.title,
+            updateBundleDto.is_private,
+            uuid,
+        ]);
+        return bundle;
     }
 
-    async remove(uuid: UUID): Promise<number> {
-        const client = await this.pool.getClient();
-
-        try {
-            const query = `
+    async remove(uuid: UUID) {
+        const query = `
             DELETE
             FROM member.bundle
             WHERE uuid = $1
+            RETURNING user_no, uuid, title, is_private
             `;
 
-            await client.query('BEGIN');
-            const result = await client.query(query, [uuid]);
-            await client.query('COMMIT');
+        const deleted = await this.txHost.tx.oneOrNone<Bundle>(query, [uuid]);
 
-            return result.rowCount || 0;
-        } catch (e) {
-            if (e instanceof DatabaseError) {
-                await client.query('ROLLBACK');
-                this.logger.error(e.message);
-            }
-            throw e;
-        } finally {
-            client.release();
-        }
+        return deleted;
     }
 }

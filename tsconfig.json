@@ -16,7 +16,8 @@
       "@auth/*": ["src/modules/auth/*"],
       "@bundle/*": ["src/modules/bundle/*"],
       "@music/*": ["src/modules/music/*"],
-      "@comments/*": ["src/modules/comments/*"]
+      "@comments/*": ["src/modules/comments/*"],
+      "@test/*": ["test/utils/*"]
     },
     "incremental": true,
     "strict": false,

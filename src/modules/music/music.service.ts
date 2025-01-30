@@ -1,11 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { UUID } from 'crypto';
-import { MusicRepository } from './music.repository';
+import { Transactional } from '@nestjs-cls/transactional';
 import { PostgresError } from 'pg-error-enum';
+import { UUID } from 'crypto';
+
 import { isDataBaseError } from '@common/exception/utils';
-import { MusicServiceExeception } from './exception';
-import { CreateMusicDto } from './dto/create-music.dto';
 import { User } from '@user/entities/user.entity';
+
+import { MusicRepository } from './music.repository';
+import { MusicServiceExeception } from './exceptions';
+
+import { CreateMusicDto } from './dto/create-music.dto';
 
 @Injectable()
 export class MusicService {
@@ -15,45 +19,41 @@ export class MusicService {
         private readonly musicRepository: MusicRepository,
     ) {}
 
+    @Transactional()
     async createBundleMusic(createMusicDto: CreateMusicDto, uuid: UUID) {
         try {
-            const musicId = await this.createInfoIfNotExists(createMusicDto);
-            await this.musicRepository.create(musicId, uuid);
+            let musicId = await this.musicRepository.findMusicIdByExternalUrl(createMusicDto.external_url);
+
+            if (musicId === null) {
+                this.logger.debug(`등록되지 않은 음악. 새로 추가합니다. ${JSON.stringify(createMusicDto, null, 2)}`);
+                musicId = await this.musicRepository.createMusicInfo(createMusicDto);
+            }
+
+            return await this.musicRepository.createBundleMusic(musicId, uuid);
         } catch (e) {
             if (isDataBaseError(e)
                 && e.code === PostgresError.UNIQUE_VIOLATION
             )
-                throw MusicServiceExeception.MusicAlreadyInBundle;
+                throw MusicServiceExeception.MUSIC_ALREADY_IN_BUNDLE;
             throw e;
         }
     }
 
-    async findManyByBundleUUID(uuid: UUID) {
-        const bundlemusics = this.musicRepository.findManyBundleMusicByBundleUUID(uuid);
-        return bundlemusics;
-    }
+    @Transactional()
+    async remove(bundleMusicId: number, user: User) {
+        await this.checkOwnerBybundleMusicId(bundleMusicId, user);
 
-    findManyRecent(user: User) {
-        throw new Error(`${JSON.stringify(user)} Method not Implemnted`);
-    }
-
-    async remove(bundleMusicId: number) {
-        await this.musicRepository.remove(bundleMusicId);
-    }
-
-    async createInfoIfNotExists(createMusicDto: CreateMusicDto) {
-        let result = await this.musicRepository.findMusicIdByExternalId(createMusicDto.external_url);
-
-        if (result === null) {
-            this.logger.debug(`등록되지 않은 음악. 새로 추가합니다. ${JSON.stringify(createMusicDto, null, 2)}`);
-            result = await this.musicRepository.createInfo(createMusicDto);
-        }
-
-        return result.music_id;
+        return await this.musicRepository.remove(bundleMusicId);
     }
 
     async checkOwnerBybundleMusicId(bundleMusicId: number, user: User) {
-        const { is_owner } = await this.musicRepository.checkOwnerBybundleMusicId(bundleMusicId, user);
-        return is_owner;
+        const isOwner = await this.musicRepository.checkOwnerBybundleMusicId(bundleMusicId, user.user_no);
+
+        if (!isOwner)
+            throw MusicServiceExeception.FORBIDDEN;
+    }
+    
+    findManyRecent(user: User) {
+        throw new Error(`${JSON.stringify(user)} Method not Implemnted`);
     }
 }

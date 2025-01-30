@@ -21,6 +21,6 @@ export class UserController {
         @reqUser() user: User,
         @Param('username') username: string,
     ): Promise<AnonymousProfile | Profile> {
-        return await this.userService.getProfile(username, user);
+        return await this.userService.findProfileByUsername(username, user);
     }
 }

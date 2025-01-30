@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Transactional } from '@nestjs-cls/transactional';
 
 import { AuthRegisterDto } from './dto/auth-register.dto';
 import { AuthUsernameLoginDto } from './dto/auth-username-login.dto';
@@ -9,7 +10,6 @@ import { AuthRepository } from './auth.repository';
 import { CryptService } from '@common/crypt/crypt.service';
 import { UserService } from '@user/user.service';
 import { AuthServiceException } from './exceptions';
-
 
 @Injectable()
 export class AuthService {
@@ -21,15 +21,13 @@ export class AuthService {
         private readonly cryptService: CryptService,
     ) {}
 
-    async register(signUpDto: AuthRegisterDto) {
-        const exists = await this.userService.isExistByUsername(signUpDto.username);
-
-        if (exists)
-            throw AuthServiceException.USERNAME_ALREADY_EXISTS;
-
-        signUpDto.password = await this.cryptService.hashPassword(signUpDto.password);
-
-        await this.authRepository.create(signUpDto);
+    @Transactional()
+    async register(authRegisterDto: AuthRegisterDto) {
+        const hashedPassword = await this.cryptService.hashPassword(authRegisterDto.password);
+        const user = await this.userService.create(authRegisterDto.username);
+        await this.authRepository.createPassword(user.user_no, hashedPassword);
+    
+        return true;
     }
 
     async login(user: User) {
@@ -42,7 +40,7 @@ export class AuthService {
     }
 
     async validateLogin(authUsernameLoginDto: AuthUsernameLoginDto) {
-        const password = await this.authRepository.getPassword(authUsernameLoginDto.username);
+        const password = await this.authRepository.findPasswordByUsername(authUsernameLoginDto.username);
 
         if (!password) 
             throw AuthServiceException.INVAILD_LOGIN_CREDENTIAL;
@@ -52,11 +50,9 @@ export class AuthService {
         if (!isEqual) 
             throw AuthServiceException.INVAILD_LOGIN_CREDENTIAL;
 
-        const user = await this.userService.findByNo(password.user_no);
-
         return {
-            user_no: user.user_no,
-            username: user.username,
+            user_no: password.user_no,
+            username: authUsernameLoginDto.username,
         };
     }
 }
