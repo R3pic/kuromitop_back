@@ -22,8 +22,8 @@ export class AuthController {
     @Post('/register')
     async register(
         @Body() authRegisterDto: AuthRegisterDto
-    ): Promise<void> {
-        return await this.authService.register(authRegisterDto);
+    ) {
+        await this.authService.register(authRegisterDto);
     }
 
     @UseGuards(AuthGuard('local'))
