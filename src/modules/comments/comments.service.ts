@@ -1,46 +1,50 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreateCommentDto } from './dto/create-comment-dto'; 
-import { User } from '@user/entities/user.entity';
-import { CommentsRepository } from './comments.repository';
-import { MusicService } from '@music/music.service';
-import { CommentServiceException } from './exceptions';
 import { Transactional } from '@nestjs-cls/transactional';
+
+import { CreateCommentDto } from './domain/dto/create-comment.dto'; 
+import { CommentsRepository } from './comments.repository';
+import { RemoveCommentDto } from './domain/dto/remove-comment.dto';
+import { CommentForbiddenExeception, CommentNotFoundExeception } from './comments.errors';
+import { CommentMapper } from './comment.mapper';
+import { BundleID } from '@bundle/domain/model/bundle.model';
 
 @Injectable()
 export class CommentsService {
     private readonly logger = new Logger(CommentsService.name);
     constructor(
         private readonly commentRepository: CommentsRepository,
-        private readonly musicService: MusicService,
+        private readonly mapper: CommentMapper,
     ) {}
 
     @Transactional()
-    async create(createCommentDto: CreateCommentDto, user: User) {
-        await this.musicService.checkOwnerBybundleMusicId(createCommentDto.bundle_music_fk, user);
-
-        const comment = await this.commentRepository.create(createCommentDto); 
-
+    async create(createCommentDto: CreateCommentDto) {
+        const entity = this.mapper.createDtoToEntity(createCommentDto);
+        const comment = await this.commentRepository.create(entity);
         return comment;
     }
 
-    async findManyByBundleMusicId(bundleMusicId: number, user: User) {
-        await this.musicService.checkOwnerBybundleMusicId(bundleMusicId, user);
+    async findPreviewCommentsByBundle(bundleId: BundleID) {
+        return await this.commentRepository.findPreviewCommensByBunlde(bundleId);
+    }
 
-        return await this.commentRepository.findManyByBundleMusicId(bundleMusicId);
+    async findManyByBundleMusicId(trackId: number) {
+        const comments = await this.commentRepository.findManyByBundleMusicId(trackId);
+        return comments.map(this.mapper.toDto);
     }
 
     @Transactional()
-    async remove(commentId: number, user: User) {
-        await this.checkOwner(commentId, user);
+    async remove(removeCommentDto: RemoveCommentDto) {
+        const comment = await this.commentRepository.findById(removeCommentDto.id);
 
-        return await this.commentRepository.remove(commentId);
-    }
-
-    async checkOwner(commentId: number, user: User) {
-        const isOwner = await this.commentRepository.checkOwnerByCommentId(commentId, user.user_no);
-        
-        if (!isOwner) {
-            throw CommentServiceException.COMMENT_FORBIDDEN;
+        if (!comment) {
+            throw new CommentNotFoundExeception();
         }
+
+        if(comment.user_id !== removeCommentDto.reqUser.id)
+            throw new CommentForbiddenExeception();
+
+        const entity = this.mapper.removeDtoToEntity(removeCommentDto);
+
+        return await this.commentRepository.remove(entity);
     }
 }

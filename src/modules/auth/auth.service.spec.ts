@@ -3,16 +3,16 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { AuthService } from './auth.service';
 import { AuthRepository } from './auth.repository';
 import { UserService } from '@user/user.service';
-import { UserServiceException } from '@user/exceptions';
-import { AuthRegisterDto } from './dto/auth-register.dto';
+import { UserServiceException } from '@user/user.error';
+import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
-import { CryptService } from '@common/crypt/crypt.service';
+import { CryptService } from '@common/utils/crypt';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { getMockTransactionHost } from '@test/mockTransactionHost';
-import { User } from '@user/entities/user.entity';
-import { AuthUsernameLoginDto } from './dto/auth-username-login.dto';
+import { User } from '@user/domain/entities/user.entity';
+import { LoginDto } from './dto/login.dto';
 import { Password } from './entities/password.entity';
-import { AuthServiceException } from './exceptions';
+import { AuthServiceException } from './auth.error';
  
 describe('AuthService', () => {
     let service: AuthService;
@@ -55,7 +55,7 @@ describe('AuthService', () => {
 
     describe('register', () => {
         it('새로운 유저 계정을 생성한다.', async () => {
-            const authRegisterDto: AuthRegisterDto = {
+            const authRegisterDto: RegisterDto = {
                 username: 'TestUser',
                 password: 'testPassword',
             };
@@ -73,7 +73,7 @@ describe('AuthService', () => {
         });
 
         it('이미 존재하는 아이디라면 UserAlreadyException을 발생시킨다.', async () => {
-            const authRegisterDto: AuthRegisterDto = {
+            const authRegisterDto: RegisterDto = {
                 username: 'UserA',
                 password: 'testPassword',
             };
@@ -118,7 +118,7 @@ describe('AuthService', () => {
 
             const passwordEntity = new Password(user_no, password, new Date());
 
-            const authUsernameLoginDto: AuthUsernameLoginDto = {
+            const authUsernameLoginDto: LoginDto = {
                 username,
                 password,
             };
@@ -131,7 +131,7 @@ describe('AuthService', () => {
             mockRepository.findPasswordByUsername.mockResolvedValue(passwordEntity);
             mockCryptService.comparePassword.mockImplementation(async (h, p) => h === p);
 
-            const actual = await service.validateLogin(authUsernameLoginDto);
+            const actual = await service.validateUser(authUsernameLoginDto);
 
             expect(actual).toEqual(expected);
         });
@@ -140,7 +140,7 @@ describe('AuthService', () => {
             const username = 'user';
             const password = 'password';
 
-            const authUsernameLoginDto: AuthUsernameLoginDto = {
+            const authUsernameLoginDto: LoginDto = {
                 username,
                 password,
             };
@@ -149,7 +149,7 @@ describe('AuthService', () => {
 
             mockRepository.findPasswordByUsername.mockImplementation(async () => null);
 
-            const method = async () => await service.validateLogin(authUsernameLoginDto);
+            const method = async () => await service.validateUser(authUsernameLoginDto);
 
             await expect(method()).rejects.toThrow(expected);
         });
@@ -159,7 +159,7 @@ describe('AuthService', () => {
             const username = 'user';
             const password = 'password';
 
-            const authUsernameLoginDto: AuthUsernameLoginDto = {
+            const authUsernameLoginDto: LoginDto = {
                 username,
                 password,
             };
@@ -171,7 +171,7 @@ describe('AuthService', () => {
             mockRepository.findPasswordByUsername.mockResolvedValue(passwordEntity);
             mockCryptService.comparePassword.mockImplementation(async (h, p) => h === p);
 
-            const method = async () => await service.validateLogin(authUsernameLoginDto);
+            const method = async () => await service.validateUser(authUsernameLoginDto);
 
             await expect(method()).rejects.toThrow(expected);
         });

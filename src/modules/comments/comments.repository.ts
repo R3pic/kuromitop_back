@@ -2,10 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPgPromise } from '@nestjs-cls/transactional-adapter-pg-promise';
 
-import { IsOwner } from '@common/database/results';
-
-import { Comment } from './entities/comment.entity';
-import { CreateCommentDto } from './dto/create-comment-dto';
+import { CommentEntity } from './domain/entities/comment.entity';
+import { CommentModel } from './domain/model/comment.model';
+import { BundleID } from '@bundle/domain/model/bundle.model';
 
 @Injectable()
 export class CommentsRepository {
@@ -15,54 +14,64 @@ export class CommentsRepository {
         private readonly txHost: TransactionHost<TransactionalAdapterPgPromise>
     ) {}
 
-    async checkOwnerByCommentId(commentId: number, user_no: number) {
+    async create(entity: CommentEntity) {
         const query = `
-            SELECT
-                CASE WHEN Bundle.user_no = $1 THEN TRUE ELSE FALSE END AS is_owner
-            FROM member.comment Comment, music.bundle_music BundleMusic, member.bundle Bundle
-            WHERE BundleMusic.bundle_id = Bundle.uuid
-            AND BundleMusic.bundle_music_pk = Comment.bundle_music_fk
-            AND Comment.comment_id = $2
-            `;
-        const result = await this.txHost.tx.one<IsOwner>(query, [ 
-            user_no,
-            commentId,
-        ]);
-        return result.is_owner;
-    }
-
-    async create(createCommentDto: CreateCommentDto) {
-        const query = `
-            INSERT INTO member.comment (bundle_music_fk, comment)
+            INSERT INTO member.comment (bundle_tracks_fk, content)
             VALUES ($1, $2)
-            RETURNING comment_id, comment, create_at
+            RETURNING *
             `;
-        const comment = await this.txHost.tx.one<Comment>(query, [
-            createCommentDto.bundle_music_fk,
-            createCommentDto.comment,
+        const comment = await this.txHost.tx.one<CommentModel>(query, [
+            entity.trackId,
+            entity.content,
         ]);
 
         return comment;
     }
 
-    async findManyByBundleMusicId(bundleMusicId: number): Promise<Comment[] | null> {
+    async findById(id: number) {
         const query = `
-            SELECT comment_id, comment, create_at
-            FROM member.comment
-            WHERE bundle_music_fk = $1
+            SELECT Bundle.user_id, Comment.*
+            FROM member.comment Comment, music.bundle_tracks BundleTrack, member.bundle Bundle
+            WHERE BundleTrack.id = Comment.bundle_tracks_fk
+            AND BundleTrack.bundle_id = Bundle.id
+            AND Comment.id = $1
             `;
-        const comments = await this.txHost.tx.manyOrNone<Comment>(query, [bundleMusicId]);
-        return comments;
+        const model = await this.txHost.tx.oneOrNone<CommentModel & { user_id: number }>(query, [id]);
+        return model;
     }
 
-    async remove(commentId: number) {
+    async remove(entity: CommentEntity) {
         const query = `
             DELETE
             FROM member.comment
-            WHERE comment_id = $1
-            RETURNING comment_id, comment, create_at
+            WHERE id = $1
+            RETURNING *
             `;
-        const comment = await this.txHost.tx.one<Comment>(query, [commentId]);
+        const comment = await this.txHost.tx.one<CommentModel>(query, [entity.id]);
         return comment;
+    }
+
+    async findPreviewCommensByBunlde(bundleId: BundleID) {
+        const query = `
+            SELECT DISTINCT ON (BundleTracks.id)
+                Comment.*
+            FROM music.bundle_tracks BundleTracks, member.comment Comment
+            WHERE BundleTracks.id = Comment.bundle_tracks_fk
+            AND BundleTracks.bundle_id = $1
+            ORDER BY BundleTracks.id, Comment.created_at DESC;
+            `;
+        const comment = await this.txHost.tx.manyOrNone<CommentModel>(query, [bundleId]);
+        return comment;
+    }
+
+    async findManyByBundleMusicId(trackId: number) {
+        const query = `
+            SELECT *
+            FROM member.comment
+            WHERE bundle_tracks_fk = $1
+            `;
+        const comments = await this.txHost.tx.manyOrNone<CommentModel>(query, [trackId]);
+
+        return comments;
     }
 }

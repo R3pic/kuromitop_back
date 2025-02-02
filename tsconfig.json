@@ -15,7 +15,7 @@
       "@user/*": ["src/modules/user/*"],
       "@auth/*": ["src/modules/auth/*"],
       "@bundle/*": ["src/modules/bundle/*"],
-      "@music/*": ["src/modules/music/*"],
+      "@tracks/*": ["src/modules/tracks/*"],
       "@comments/*": ["src/modules/comments/*"],
       "@test/*": ["test/utils/*"]
     },

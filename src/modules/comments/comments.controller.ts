@@ -1,53 +1,37 @@
 import {
-    Controller, Get, Post, Body,
+    Controller,
     UseGuards,
     Param,
     ParseIntPipe,
     Delete,
+    Logger,
     HttpCode,
-    HttpStatus,
-    Logger, 
+    HttpStatus, 
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { CreateCommentBody } from './dto/create-comment.body';
-import { reqUser } from '@auth/auth.decorator';
-import { User } from '@user/entities/user.entity';
-import { JwtAuthGuard } from '@auth/auth.guard';
-import { CreateCommentDto } from './dto/create-comment-dto';
+import { ReqUser } from '@common/decorator/req-user.decorator';
+import { JwtAuthGuard } from '@common/guard/auth.guard';
+import { RequestUser } from '@common/request-user';
+import { RemoveCommentDto } from './domain/dto/remove-comment.dto';
+import { routes } from '@common/config/routes';
 
 @UseGuards(JwtAuthGuard)
-@Controller('comments')
+@Controller(routes.comment.root)
 export class CommentsController {
     private readonly logger = new Logger(CommentsController.name);
 
     constructor(
         private readonly commentsService: CommentsService
     ) {}
-    
-    @Post(':bundleMusicId')
-    @HttpCode(HttpStatus.CREATED)
-    async create(
-        @Param('bundleMusicId', ParseIntPipe) bundleMusicId: number, 
-        @Body() createCommentBody: CreateCommentBody,
-        @reqUser() user: User
-    ) {
-        const createCommentDto = CreateCommentDto.of(bundleMusicId, createCommentBody);
-        return await this.commentsService.create(createCommentDto, user);
-    }
 
-    @Get(':bundleMusicId')
-    async findManyByBundleMusicId(
-        @Param('bundleMusicId', ParseIntPipe) bundleMusicId: number,
-        @reqUser() user: User
-    ) {
-        return await this.commentsService.findManyByBundleMusicId(bundleMusicId, user);
-    }
-
-    @Delete(':comment_id')
+    @Delete(routes.comment.detail)
+    @HttpCode(HttpStatus.NO_CONTENT)
     async remove(
-        @Param('comment_id', ParseIntPipe) commentId: number,
-        @reqUser() user: User
+        @Param('id', ParseIntPipe) id: number,
+        @ReqUser() reqUser: RequestUser
     ) {
-        return await this.commentsService.remove(commentId, user);
+        const removeCommentDto = new RemoveCommentDto(id, reqUser);
+
+        return await this.commentsService.remove(removeCommentDto);
     }
 }

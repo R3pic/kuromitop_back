@@ -1,0 +1,10 @@
+services:
+  postgres:
+    container_name: test_postgres
+    image: postgres:latest
+    volumes:
+      - ./database/test/init:/docker-entrypoint-initdb.d
+    ports:
+      - ${DB_PORT}:5432
+    env_file:
+      - .env.test.local

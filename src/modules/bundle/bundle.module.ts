@@ -1,21 +1,23 @@
 import { Module } from '@nestjs/common';
-import { BundleService } from './bundle.service';
-import { BundleController } from './bundle.controller';
+
 import { PostgresModule } from '@common/database/postgres.module';
+import { TrackModule } from '@tracks/track.module';
+
+import { BundleController } from './bundle.controller';
+import { BundleService } from './bundle.service';
 import { BundleRepository } from './bundle.repository';
-import { UserModule } from '@user/user.module';
-import { MusicModule } from '@music/music.module';
+import { BundleMapper } from './bundle.mapper';
 
 @Module({
     imports: [
         PostgresModule,
-        UserModule,
-        MusicModule,
+        TrackModule,
     ],
     exports: [BundleService],
     controllers: [BundleController],
     providers: [ 
         BundleService, 
+        BundleMapper,
         BundleRepository,
     ],
 })

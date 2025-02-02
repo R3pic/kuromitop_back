@@ -11,7 +11,7 @@ import { clsModuleOptions } from '@common/config/cls-module.config';
 import { AuthModule } from '@auth/auth.module';
 import { UserModule } from '@user/user.module';
 import { BundleModule } from '@bundle/bundle.module';
-import { MusicModule } from '@music/music.module';
+import { TrackModule } from '@tracks/track.module';
 import { CommentsModule } from '@comments/comments.module';
 import { LoggerMiddleware } from '@common/logger/logger.middleware';
 
@@ -22,7 +22,7 @@ import { LoggerMiddleware } from '@common/logger/logger.middleware';
         AuthModule, 
         UserModule,
         BundleModule,
-        MusicModule,
+        TrackModule,
         CommentsModule,
     ],
     exports: [],

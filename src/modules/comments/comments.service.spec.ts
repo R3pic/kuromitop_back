@@ -3,27 +3,27 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { getMockTransactionHost } from '@test/mockTransactionHost';
-import { MusicService } from '@music/music.service';
-import { MusicServiceExeception } from '@music/exceptions';
-import { LoginType, User } from '@user/entities/user.entity';
+import { TrackService } from '@tracks/track.service';
+import { MusicServiceExeception } from 'src/modules/tracks/track.errors';
+import { LoginType, User } from '@user/domain/entities/user.entity';
 
 import { CommentsService } from './comments.service';
 import { CommentsRepository } from './comments.repository';
-import { CreateCommentDto } from './dto/create-comment-dto';
-import { Comment } from './entities/comment.entity';
+import { CreateCommentDto } from './domain/dto/create-comment.dto';
+import { CommentEntity } from './domain/entities/comment.entity';
 import { CommentForbiddenExeception } from './exceptions/comment-forbidden.error';
 
 describe('CommentsService', () => {
     let service: CommentsService;
     let mockRepository: MockProxy<CommentsRepository>;
-    let mockMusicService: MockProxy<MusicService>;
+    let mockMusicService: MockProxy<TrackService>;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 CommentsService,
                 CommentsRepository,
-                MusicService,
+                TrackService,
                 {
                     provide: TransactionHost,
                     useValue: getMockTransactionHost(),
@@ -32,13 +32,13 @@ describe('CommentsService', () => {
         })
             .overrideProvider(CommentsRepository)
             .useValue(mock<CommentsRepository>())
-            .overrideProvider(MusicService)
-            .useValue(mock<MusicService>())
+            .overrideProvider(TrackService)
+            .useValue(mock<TrackService>())
             .compile();
 
         service = module.get(CommentsService);
         mockRepository = module.get(CommentsRepository);
-        mockMusicService = module.get(MusicService);
+        mockMusicService = module.get(TrackService);
     });
 
     describe('create', () => {
@@ -48,14 +48,14 @@ describe('CommentsService', () => {
             
             const createCommentDto: CreateCommentDto = {
                 bundle_music_fk,
-                comment,
+                content: comment,
             };
             
             const user = User.of(1, 'User', LoginType.JWT);
 
             const comment_id = 1;
             
-            const expected: Comment = {
+            const expected: CommentEntity = {
                 comment_id,
                 comment,
                 created_at: new Date(),
@@ -75,7 +75,7 @@ describe('CommentsService', () => {
             
             const createCommentDto: CreateCommentDto = {
                 bundle_music_fk,
-                comment,
+                content: comment,
             };
             
             const user = User.of(1, 'User', LoginType.JWT);
@@ -99,7 +99,7 @@ describe('CommentsService', () => {
 
             const comment_id = 1;
             
-            const expected: Comment[] = [
+            const expected: CommentEntity[] = [
                 {
                     comment_id,
                     comment,
@@ -167,7 +167,7 @@ describe('CommentsService', () => {
 
             const user = User.of(1, 'User', LoginType.JWT);
 
-            const expected: Comment = {
+            const expected: CommentEntity = {
                 comment_id,
                 comment,
                 created_at: new Date(),

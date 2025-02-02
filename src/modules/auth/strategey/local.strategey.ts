@@ -1,8 +1,11 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthService } from '@auth/auth.service';
-import { AuthServiceException } from '@auth/exceptions';
+import { InvalidLocalCredentialException } from '@auth/auth.error';
+import { LoginDto } from '@auth/dto/login.dto';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -11,12 +14,27 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(username: string, password: string) {
-        const user = await this.authService.validateLogin({ username, password });
+        const loginDto = plainToInstance(LoginDto, {
+            username,
+            password,
+        });
+
+        await validateLoginDto(loginDto);
+
+        const user = await this.authService.validateUser(loginDto);
 
         if (!user) {
-            throw AuthServiceException.INVAILD_LOGIN_CREDENTIAL;
+            throw new InvalidLocalCredentialException();
         }
         
         return user;
     }
+}
+
+async function validateLoginDto(loginDto: LoginDto): Promise<void> {
+    const errors = await validate(loginDto);
+
+    if (errors.length > 0)
+        // throw new BadRequestException(errors.map((e) => e.constraints && Object.values(e.constraints)).flat());
+        throw new BadRequestException(errors.flatMap((e) => Object.values(e.constraints || {})));
 }

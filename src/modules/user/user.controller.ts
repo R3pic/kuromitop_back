@@ -1,26 +1,36 @@
 import {
-    Controller, Get, Logger, Param, UseGuards, 
+    Body,
+    Controller, Get, Logger, Param, Patch, UseGuards, 
 } from '@nestjs/common';
 
-import { reqUser } from '@auth/auth.decorator';
-import { OptionalAuthGuard } from '@auth/auth.guard';
+import { ReqUser } from '@common/decorator/req-user.decorator';
+import { JwtAuthGuard, OptionalAuthGuard } from '@common/guard/auth.guard';
 
 import { UserService } from './user.service';
-import { User } from './entities/user.entity';
-import { AnonymousProfile } from './dto/anonymous-profile.dto';
-import { Profile } from './entities/profile.entity';
+import { RequestUser } from '@common/request-user';
+import { routes } from '@common/config/routes';
+import { UpdateProfileDto } from './domain/dto/update-profile.dto';
 
-@Controller('user')
+@Controller(routes.user.root)
 export class UserController {
     logger = new Logger(UserController.name);
     constructor(private readonly userService: UserService) {}
 
     @UseGuards(OptionalAuthGuard)
-    @Get('/:username')
+    @Get(routes.user.profile)
     async getUser(
-        @reqUser() user: User,
+        @ReqUser() reqUser: RequestUser,
         @Param('username') username: string,
-    ): Promise<AnonymousProfile | Profile> {
-        return await this.userService.findProfileByUsername(username, user);
+    ) {
+        return await this.userService.findProfileByUsername(username, reqUser);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch(routes.user.me)
+    async updateProfile(
+        @ReqUser() reqUser: RequestUser,
+        @Body() updateProfileDto: UpdateProfileDto
+    ) {
+        return await this.userService.updateProfile(updateProfileDto, reqUser);
     }
 }

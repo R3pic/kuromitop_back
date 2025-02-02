@@ -1,83 +1,90 @@
 import {
     Controller, Get, Post, Body, Patch, Delete,
-    UseGuards,
-    HttpCode,
-    HttpStatus,
-    Param, 
+    UseGuards, HttpCode, HttpStatus, Res,
+    Logger,
 } from '@nestjs/common';
-import { BundleService } from './bundle.service';
-import { CreateBundleDto } from './dto/create-bundle.dto';
-import { UpdateBundleDto } from './dto/update-bundle.dto';
-import { UUID } from 'crypto';
-import { UUIDParam } from '@common/decorator/UUIDParam.decorator';
-import { JwtAuthGuard, OptionalAuthGuard } from '@auth/auth.guard';
-import { reqUser } from '@auth/auth.decorator';
-import { User } from '@user/entities/user.entity';
-import { AddMusicToBundleDto } from './dto/add-music-to-bundle.dto';
+import { Response } from 'express';
 
-@Controller('bundles')
+import { UUIDParam } from '@common/decorator/uuid-Param.decorator';
+import { JwtAuthGuard, OptionalAuthGuard } from '@common/guard/auth.guard';
+import { ReqUser } from '@common/decorator/req-user.decorator';
+import { RequestUser } from '@common/request-user';
+import { routes } from '@common/config/routes';
+
+import { BundleService } from './bundle.service';
+import { AddTrackDto } from './domain/dto/add-track.dto';
+import { CreateBundleDto } from './domain/dto/create-bundle.dto';
+import { CreateBundleBody } from './domain/dto/create-bundle.body';
+import { UpdateBundleDto } from './domain/dto/update-bundle.dto';
+import { UpdateBundleBody } from './domain/dto/update-bundle.body';
+import { RemoveBundleDto } from './domain/dto/delete-bundle.dto';
+import { AddTrackBody } from './domain/dto/add-track.body';
+import { BundleID } from './domain/model/bundle.model';
+
+@Controller(routes.bundle.root)
 export class BundleController {
+    private readonly logger = new Logger(BundleController.name);
     constructor(private readonly bundleService: BundleService) {}
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @Post()
-    create(
-        @Body() createBundleDto: CreateBundleDto,
-        @reqUser() user: User,
+    async create(
+        @Body() createBundleBody: CreateBundleBody,
+        @ReqUser() reqUser: RequestUser,
+        @Res({ passthrough: true }) res: Response,
     ) {
-        return this.bundleService.create(createBundleDto, user);
+        const createBundleDto = new CreateBundleDto(createBundleBody, reqUser);
+        const id = await this.bundleService.create(createBundleDto);
+
+        res.setHeader('Location', routes.bundle.location(id));
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.OK)
+    @Patch(routes.bundle.detail)
+    update(
+        @UUIDParam('uuid') bundleID: BundleID, 
+        @Body() updateBundleBody: UpdateBundleBody,
+        @ReqUser() reqUser: RequestUser,
+    ) {
+        const updateBundleDto = new UpdateBundleDto(bundleID, updateBundleBody, reqUser);
+
+        return this.bundleService.update(updateBundleDto);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Delete(routes.bundle.detail)
+    async remove(
+        @UUIDParam('uuid') bundleID: BundleID,
+        @ReqUser() reqUser: RequestUser
+    ) {
+        const removeBundleDto = new RemoveBundleDto(bundleID, reqUser);
+
+        return await this.bundleService.remove(removeBundleDto);
     }
 
     @UseGuards(OptionalAuthGuard)
     @HttpCode(HttpStatus.OK)
-    @Get(':username')
-    findOne(
-        @Param('username') username: string,
-        @reqUser() user: User
+    @Get(routes.bundle.tracks.root)
+    async findTracksByBundle(
+        @UUIDParam('uuid') bundleID: BundleID,
+        @ReqUser() reqUser: RequestUser
     ) {
-        return this.bundleService.findMany(username, user);
+        return await this.bundleService.findTracksByBundle(bundleID, reqUser);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Patch(':uuid')
+    @Post(routes.bundle.tracks.root)
     @HttpCode(HttpStatus.OK)
-    update(
-        @UUIDParam('uuid') uuid: UUID, 
-        @Body() updateBundleDto: UpdateBundleDto,
-        @reqUser() user: User,
+    async add(
+        @UUIDParam('uuid') bundleID: BundleID,
+        @Body() addTrackBody: AddTrackBody,
+        @ReqUser() reqUser: RequestUser
     ) {
-        return this.bundleService.update(uuid, updateBundleDto, user);
-    }
+        const addTrackDto = new AddTrackDto(bundleID, addTrackBody, reqUser);
 
-    @UseGuards(JwtAuthGuard)
-    @Delete(':uuid')
-    @HttpCode(HttpStatus.OK)
-    remove(
-        @UUIDParam('uuid') uuid: UUID,
-        @reqUser() user: User
-    ) {
-        return this.bundleService.remove(uuid, user);
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @Get(':uuid/musics')
-    @HttpCode(HttpStatus.OK)
-    getMusicsByBundle(
-        @UUIDParam('uuid') uuid: UUID,
-        @reqUser() user: User
-    ) {
-        return this.bundleService.findManyBundleMusicByBundle(uuid, user);
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @Post(':uuid/musics')
-    @HttpCode(HttpStatus.OK)
-    add(
-        @UUIDParam('uuid') uuid: UUID,
-        @Body() addMusicToBundleDto: AddMusicToBundleDto,
-        @reqUser() user: User
-    ) {
-        return this.bundleService.addMusicToBundle(uuid, addMusicToBundleDto, user);
+        return await this.bundleService.addTrackToBundle(addTrackDto);
     }
 }

@@ -4,13 +4,13 @@ import { UserRepository } from './user.repository';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { getMockTransactionHost } from '@test/mockTransactionHost';
 import { mock, MockProxy } from 'jest-mock-extended';
-import { LoginType, User } from './entities/user.entity';
+import { LoginType, User } from './domain/entities/user.entity';
 import { DatabaseError } from 'pg';
 import { PostgresError } from 'pg-error-enum';
 import { UserNotFoundException } from './exceptions/user-not-found.error';
 import { UsernameAlreadyExistsException } from './exceptions/username-already-exists.error';
-import { Profile } from './entities/profile.entity';
-import { AnonymousProfile } from './dto/anonymous-profile.dto';
+import { Profile } from './domain/entities/profile.entity';
+import { AnonymousProfile } from './domain/dto/anonymous-profile.dto';
 
 describe('UserService', () => {
     let service: UserService;
@@ -73,9 +73,9 @@ describe('UserService', () => {
             const user = User.of(userNo, 'User', LoginType.JWT);
             const expected = user;
 
-            mockRepository.findByNo.mockResolvedValue(user);
+            mockRepository.findById.mockResolvedValue(user);
 
-            const actual = await service.findByNo(userNo);
+            const actual = await service.findById(userNo);
 
             expect(actual).toEqual(expected);
         });
@@ -85,9 +85,9 @@ describe('UserService', () => {
 
             const expected = UserNotFoundException;
 
-            mockRepository.findByNo.mockResolvedValue(null);
+            mockRepository.findById.mockResolvedValue(null);
 
-            const method = async () => await service.findByNo(userNo);
+            const method = async () => await service.findById(userNo);
 
             await expect(method()).rejects.toThrow(expected);
         });
@@ -138,7 +138,7 @@ describe('UserService', () => {
 
             const expected = UserNotFoundException;
 
-            mockRepository.findByNo.mockResolvedValue(null);
+            mockRepository.findById.mockResolvedValue(null);
 
             const method = async () => await service.findByUsername(userName);
 

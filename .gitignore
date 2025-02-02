@@ -1,5 +1,5 @@
 # docker
-/database/data
+/database/dev/data
 
 # compiled output
 /dist

@@ -1,4 +1,7 @@
-import { Module } from '@nestjs/common';
+import {
+    Logger, Module, OnApplicationShutdown,
+    OnModuleDestroy, 
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as pgPromise from 'pg-promise';
 
@@ -19,11 +22,25 @@ const pgp = pgPromise({});
                     database: configService.get<string>('DB_DATABASE'),
                 };
 
-                return pgp<pgPromise.IDatabase<any>>(dbConfig);
+                return pgp(dbConfig);
             },
             inject: [ConfigService],
         },
     ],
     exports: [DB],
 })
-export class PostgresModule {}
+export class PostgresModule implements OnApplicationShutdown, OnModuleDestroy {
+    private readonly logger = new Logger(PostgresModule.name);
+
+    onModuleDestroy() {
+        this.logger.log('try to close Database Connection...');
+        pgp.end();
+        this.logger.log('Successfully Closed Database Connection.');
+    }
+
+    onApplicationShutdown(signal?: string) {
+        this.logger.log(`${signal} Received. try to close Database Connection...`);
+        pgp.end();
+        this.logger.log('Successfully Closed Database Connection.');
+    }
+}

@@ -3,17 +3,15 @@ import { CommentsService } from './comments.service';
 import { CommentsController } from './comments.controller';
 import { CommentsRepository } from './comments.repository';
 import { PostgresModule } from '@common/database/postgres.module';
-import { MusicModule } from '@music/music.module';
+import { CommentMapper } from './comment.mapper';
 
 @Module({
-    imports: [
-        PostgresModule,
-        MusicModule,
-    ],
+    imports: [PostgresModule],
     exports: [CommentsService],
     controllers: [CommentsController],
     providers: [ 
-        CommentsService, 
+        CommentsService,
+        CommentMapper,
         CommentsRepository,
     ],
 })

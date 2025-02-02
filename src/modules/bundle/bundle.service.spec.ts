@@ -4,30 +4,30 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { UUID } from 'crypto';
 
 import { getMockTransactionHost } from '@test/mockTransactionHost';
-import { LoginType, User } from '@user/entities/user.entity';
-import { MusicService } from '@music/music.service';
+import { LoginType, User } from '@user/domain/entities/user.entity';
+import { TrackService } from '@tracks/track.service';
 import { BundleService } from './bundle.service';
 import { BundleRepository } from './bundle.repository';
-import { Bundle } from './entities/bundle.entity';
+import { Bundle } from './domain/entities/bundle.entity';
 import { BundleNotFoundException } from './exception/bundle-not-found.error';
 import { BundleForbiddenException } from './exception/bundle-forbidden.error';
-import { CreateBundleDto } from './dto/create-bundle.dto';
-import { AddMusicToBundleDto } from './dto/add-music-to-bundle.dto';
-import { BundleMusic } from '@music/entities/bundle-music.entity';
-import { BundleMusicItem } from './entities/bundle-music-item.entity';
-import { UpdateBundleDto } from './dto/update-bundle.dto';
+import { CreateBundleDto } from './domain/dto/create-bundle.dto';
+import { AddTrackDto } from './domain/dto/add-track.dto';
+import { BundleMusic } from '@music/domain/entities/bundle-music.entity';
+import { BundleMusicItem } from './domain/entities/bundle-music-item.entity';
+import { UpdateBundleDto } from './domain/dto/update-bundle.dto';
 
 describe('BundleService', () => {
     let service: BundleService;
     let mockRepository: MockProxy<BundleRepository>;
-    let mockMusicService: MockProxy<MusicService>;
+    let mockMusicService: MockProxy<TrackService>;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 BundleService,
                 BundleRepository,
-                MusicService,
+                TrackService,
                 {
                     provide: TransactionHost,
                     useValue: getMockTransactionHost(),
@@ -36,13 +36,13 @@ describe('BundleService', () => {
         })
             .overrideProvider(BundleRepository)
             .useValue(mock<BundleRepository>())
-            .overrideProvider(MusicService)
-            .useValue(mock<MusicService>())
+            .overrideProvider(TrackService)
+            .useValue(mock<TrackService>())
             .compile();
 
         service = module.get(BundleService);
         mockRepository = module.get(BundleRepository);
-        mockMusicService = module.get(MusicService);
+        mockMusicService = module.get(TrackService);
     });
 
     describe('findOneByUUID', () => {
@@ -61,7 +61,7 @@ describe('BundleService', () => {
 
             const expected = bundle;
 
-            mockRepository.findOneByUUID.mockResolvedValue(bundle);
+            mockRepository.findByID.mockResolvedValue(bundle);
 
             const actual = await service.findOneByUUID(uuid);
 
@@ -73,7 +73,7 @@ describe('BundleService', () => {
 
             const expected = BundleNotFoundException;
 
-            mockRepository.findOneByUUID.mockResolvedValue(null);
+            mockRepository.findByID.mockResolvedValue(null);
 
             const method = async () => await service.findOneByUUID(uuid);
 
@@ -97,7 +97,7 @@ describe('BundleService', () => {
     
             const user = User.of(user_no, 'User', LoginType.JWT);
     
-            mockRepository.findOneByUUID.mockResolvedValue(bundle);
+            mockRepository.findByID.mockResolvedValue(bundle);
     
             const method = async () => await service.checkOwner(uuid, user);
     
@@ -121,7 +121,7 @@ describe('BundleService', () => {
     
             const expected = BundleForbiddenException;
     
-            mockRepository.findOneByUUID.mockResolvedValue(bundle);
+            mockRepository.findByID.mockResolvedValue(bundle);
     
             const method = async () => await service.checkOwner(uuid, user);
     
@@ -167,7 +167,7 @@ describe('BundleService', () => {
             const title = '번들이름';
             const is_private = true;
             
-            const addMusicToBundleDto: AddMusicToBundleDto = {
+            const addMusicToBundleDto: AddTrackDto = {
                 external_url: 'externalUrl',
                 title: '노래제목',
                 artist: '아티스트',
@@ -190,10 +190,10 @@ describe('BundleService', () => {
     
             const user = User.of(user_no, 'User', LoginType.JWT);
     
-            mockRepository.findOneByUUID.mockResolvedValue(bundle);
+            mockRepository.findByID.mockResolvedValue(bundle);
             mockMusicService.createBundleMusic.mockResolvedValue(expected);
     
-            const actual = await service.addMusicToBundle(uuid, addMusicToBundleDto, user);
+            const actual = await service.addTrackToBundle(uuid, addMusicToBundleDto, user);
     
             expect(actual).toEqual(expected);
             expect(mockMusicService.createBundleMusic).toHaveBeenCalledWith(addMusicToBundleDto, uuid);
@@ -205,7 +205,7 @@ describe('BundleService', () => {
             const title = '번들이름';
             const is_private = true;
             
-            const addMusicToBundleDto: AddMusicToBundleDto = {
+            const addMusicToBundleDto: AddTrackDto = {
                 external_url: 'externalUrl',
                 title: '노래제목',
                 artist: '아티스트',
@@ -223,9 +223,9 @@ describe('BundleService', () => {
     
             const user = User.of(user_no, 'User', LoginType.JWT);
     
-            mockRepository.findOneByUUID.mockResolvedValue(bundle);
+            mockRepository.findByID.mockResolvedValue(bundle);
     
-            const method = async () => await service.addMusicToBundle(uuid, addMusicToBundleDto, user);
+            const method = async () => await service.addTrackToBundle(uuid, addMusicToBundleDto, user);
     
             await expect(method()).rejects.toThrow(expected);
         });
@@ -257,8 +257,8 @@ describe('BundleService', () => {
     
             const user = User.of(user_no, 'User', LoginType.JWT);
     
-            mockRepository.findOneByUUID.mockResolvedValue(bundle);
-            mockRepository.findManyBundleMusicItemByBundleUUID.mockResolvedValue(expected);
+            mockRepository.findByID.mockResolvedValue(bundle);
+            mockRepository.findManyBundleTrackByBundleId.mockResolvedValue(expected);
     
             const actual = await service.findManyBundleMusicByBundle(uuid, user);
     
@@ -282,7 +282,7 @@ describe('BundleService', () => {
     
             const user = User.of(user_no, 'User', LoginType.JWT);
     
-            mockRepository.findOneByUUID.mockResolvedValue(bundle);
+            mockRepository.findByID.mockResolvedValue(bundle);
     
             const method = async () => await service.findManyBundleMusicByBundle(uuid, user);
     
@@ -367,7 +367,7 @@ describe('BundleService', () => {
             
             const expected = bundle;
 
-            mockRepository.findOneByUUID.mockResolvedValue(bundle);
+            mockRepository.findByID.mockResolvedValue(bundle);
             mockRepository.update.mockResolvedValue(bundle);
 
             const actual = await service.update(uuid, updateBundleDto, user);
@@ -392,7 +392,7 @@ describe('BundleService', () => {
             
             const expected = BundleForbiddenException;
 
-            mockRepository.findOneByUUID.mockResolvedValue(bundle);
+            mockRepository.findByID.mockResolvedValue(bundle);
             const method = async () => await service.remove(uuid, user);
 
             await expect(method()).rejects.toThrow(expected);
@@ -416,7 +416,7 @@ describe('BundleService', () => {
             
             const expected = bundle;
 
-            mockRepository.findOneByUUID.mockResolvedValue(bundle);
+            mockRepository.findByID.mockResolvedValue(bundle);
             mockRepository.remove.mockResolvedValue(bundle);
 
             const actual = await service.remove(uuid, user);
@@ -441,7 +441,7 @@ describe('BundleService', () => {
             
             const expected = BundleForbiddenException;
 
-            mockRepository.findOneByUUID.mockResolvedValue(bundle);
+            mockRepository.findByID.mockResolvedValue(bundle);
 
             const method = async () => await service.remove(uuid, user);
 

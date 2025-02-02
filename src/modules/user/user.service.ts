@@ -1,65 +1,94 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { UserRepository } from './user.repository';
-import { AnonymousProfile } from './dto/anonymous-profile.dto';
-import { User } from './entities/user.entity';
-import { UserServiceException } from './exceptions';
-import { isDataBaseError } from '@common/exception/utils';
-import { PostgresError } from 'pg-error-enum';
 import { Transactional } from '@nestjs-cls/transactional';
+import { UserRepository } from './user.repository';
+import { PostgresError } from 'pg-error-enum';
+
+import { BundleService } from '@bundle/bundle.service';
+import { isDataBaseError } from '@common/utils/exception-utils';
+import { UserMapper } from './user.mapper';
+import { CreateUserDto } from './domain/dto/create-user.dto';
+import { CreateProfileDto } from './domain/dto/create-profile.dto';
+import { UpdateProfileDto } from './domain/dto/update-profile.dto';
+import { RequestUser } from '@common/request-user';
+import { UsernameAlreadyExistsException, UserNotFoundException } from './user.error';
 
 @Injectable()
 export class UserService {
     private readonly logger = new Logger(UserService.name);
-    constructor(private readonly userRepository: UserRepository) {}
+
+    constructor(
+        private readonly userRepository: UserRepository,
+        private readonly bundleService: BundleService,
+        private readonly mapper: UserMapper,
+    ) {}
 
     @Transactional()
-    async create(username: string) {
+    async create(createUserDto: CreateUserDto) {
         try {
-            const user = await this.userRepository.create(username);
-            return user;
+            const userEntity = await this.mapper.createDtoToEntity(createUserDto);
+            const user = await this.userRepository.create(userEntity);
+            this.logger.log(user);
+
+            const profile = await this.createProfile(new CreateProfileDto(user.id));
+            this.logger.log(profile);
         } catch (e) {
-            if (isDataBaseError(e)
-                && e.code === PostgresError.UNIQUE_VIOLATION)
-                throw UserServiceException.USER_ALREADY_EXISTS;
+            if (isDataBaseError(e, PostgresError.UNIQUE_VIOLATION))
+                throw new UsernameAlreadyExistsException();
             throw e;
         }
     }
 
-    async findByNo(no: number) {
-        const user = await this.userRepository.findByNo(no);
-
-        if (!user) {
-            throw UserServiceException.USER_NOT_FOUND;
-        }
-
-        return user;
+    @Transactional()
+    async createProfile(createProfileDto: CreateProfileDto) {
+        const profileEntity = this.mapper.createProfileDtoToEntity(createProfileDto);
+        const profile = await this.userRepository.createProfile(profileEntity);
+        return profile;
     }
 
-    async isExistByUsername(username: string) {
-        const exists = await this.userRepository.isExistByUsername(username);
-        return exists;
+    @Transactional()
+    async updateProfile(updateProfileDto: UpdateProfileDto, reqUser: RequestUser) {
+        const profileEntity = this.mapper.updateProfileDtoToEntity(updateProfileDto);
+        profileEntity.setUserId(reqUser.id);
+        this.logger.log(profileEntity);
+        const profile = await this.userRepository.updateProfile(profileEntity);
+        return profile;
+    }
+
+    async findById(id: number) {
+        const user = await this.userRepository.findById(id);
+
+        if (!user) {
+            throw new UserNotFoundException();
+        }
+
+        const domain = this.mapper.toDomain(user);
+
+        return domain;
     }
 
     async findByUsername(username: string) {
         const user = await this.userRepository.findUserByUsername(username);
 
         if (!user) {
-            throw UserServiceException.USER_NOT_FOUND;
+            throw new UserNotFoundException();
         }
-        
-        return user;
+
+        const domain = this.mapper.toDomain(user);
+
+        return domain;
     }
 
-    async findProfileByUsername(username: string, user: User | null) {
+    async findProfileByUsername(username: string, reqUser: RequestUser | null) {
         const profile = await this.userRepository.findProfileByUsername(username);
 
         if (!profile)
-            throw UserServiceException.USER_NOT_FOUND;
+            throw new UserNotFoundException();
 
-        if (!user || profile.user_no !== user.user_no) {
-            return AnonymousProfile.of(profile);
-        }
+        const bundles = await this.bundleService.findMany(username, reqUser);
 
-        return profile;
+        return {
+            ...profile,
+            bundleList: bundles,
+        };
     }
 }
