@@ -92,10 +92,22 @@ export class TrackRepository {
 
     async findManyByBundleId(id: BundleID) {
         const query = `
-            SELECT BundleTracks.id, MusicInfo.title, MusicInfo.artist, MusicInfo.thumbnail, BundleTracks.created_at, BundleTracks.updated_at
-            FROM music.info MusicInfo, music.bundle_tracks BundleTracks
+            SELECT DISTINCT ON (BundleTracks.id)
+                BundleTracks.id, 
+                MusicInfo.title, 
+                MusicInfo.artist, 
+                MusicInfo.thumbnail, 
+                BundleTracks.created_at, 
+                BundleTracks.updated_at,
+                Comment.id AS comment_id,
+                Comment.content AS comment_content,
+                Comment.created_at AS comment_created_at,
+                COUNT(Comment.id) OVER (PARTITION BY BundleTracks.id) AS comment_count
+            FROM music.info MusicInfo, music.bundle_tracks BundleTracks, member.comment Comment
             WHERE BundleTracks.music_id = MusicInfo.id 
+            AND BundleTracks.id = Comment.bundle_tracks_fk
             AND BundleTracks.bundle_id = $1
+            ORDER BY BundleTracks.id, Comment.created_at DESC
             `;
         const tracks = await this.txHost.tx.manyOrNone<TrackModel>(query, [id]);
         return tracks;
@@ -103,17 +115,23 @@ export class TrackRepository {
 
     async findManyRecent() {
         const query = `
-        SELECT BundleTracks.id, 
+        SELECT DISTINCT ON (BundleTracks.id)
+            BundleTracks.id,
             MusicInfo.title, 
             MusicInfo.artist, 
             MusicInfo.thumbnail,
             BundleTracks.created_at, 
-            BundleTracks.updated_at
-        FROM music.info MusicInfo, music.bundle_tracks BundleTracks, member.bundle Bundle
+            BundleTracks.updated_at,
+            Comment.id AS comment_id,
+            Comment.content AS comment_content,
+            Comment.created_at AS comment_created_at,
+            COUNT(Comment.id) OVER (PARTITION BY BundleTracks.id) AS comment_count
+        FROM music.info MusicInfo, music.bundle_tracks BundleTracks, member.bundle Bundle, member.comment Comment
         WHERE BundleTracks.music_id = MusicInfo.id
+        AND BundleTracks.id = Comment.bundle_tracks_fk
         AND BundleTracks.bundle_id = Bundle.id
         AND Bundle.is_private = FALSE
-        ORDER BY BundleTracks.created_at DESC
+        ORDER BY BundleTracks.id, Comment.created_at DESC, BundleTracks.created_at DESC
         LIMIT 10
         `;
         const tracks = await this.txHost.tx.manyOrNone<TrackModel>(query);

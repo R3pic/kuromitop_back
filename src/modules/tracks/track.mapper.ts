@@ -9,6 +9,7 @@ import { TrackModel } from './domain/model/track.model';
 import { CreateTrackDto } from './domain/dto/create-music.dto';
 import { RemoveTrackDto } from './domain/dto/remove-track.dto';
 import { TrackDto } from './domain/dto/track.dto';
+import { CommentDto } from '@comments/domain/dto/comment.dto';
 
 @Injectable()
 export class TrackMapper implements Mapper<
@@ -32,6 +33,8 @@ export class TrackMapper implements Mapper<
             model.title,
             model.artist,
             model.thumbnail,
+            model.comment_count,
+            new CommentDto(model.comment_id, model.comment_content, model.comment_created_at),
         );
     }
 

@@ -7,4 +7,8 @@ export class TrackModel extends BaseModel {
     title: string;
     artist: string;
     thumbnail: string;
+    comment_id: number;
+    comment_content: string;
+    comment_created_at: Date;
+    comment_count: number;
 } 

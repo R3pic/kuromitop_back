@@ -63,24 +63,11 @@ export class TrackService {
 
     async findManyByBundleId(bundleId: BundleID) {
         const tracks = await this.trackRepository.findManyByBundleId(bundleId);
-        const recentComments = await this.commentsService.findPreviewCommentsByBundle(bundleId);
-        this.logger.log(recentComments);
-
-        const tracksWithRecentComment = tracks.map((track) => {
-            const trackDto = this.mapper.toDto(track);
-            const comment = recentComments.find((comment) => comment.bundle_tracks_fk === trackDto.id);
-            return {
-                ...trackDto,
-                recent_comment: comment,
-            };
-        });
-
-        return tracksWithRecentComment;
+        return tracks.map(this.mapper.toDto);
     }
     
     async findManyRecent() {
         const recentTracks = await this.trackRepository.findManyRecent();
-
         return recentTracks.map(this.mapper.toDto);
     }
 
