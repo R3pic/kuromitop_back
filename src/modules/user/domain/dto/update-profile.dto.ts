@@ -1,6 +1,6 @@
 import {
     IsOptional,
-    IsString, IsUrl, MaxLength,
+    IsString, MaxLength,
     NotEquals, 
 } from 'class-validator';
 import { INTRODUCTION, NICKNAME } from '@user/constants';
@@ -15,7 +15,7 @@ export class UpdateProfileDto {
     @IsOptional()
     @NotEquals(undefined)
     @IsString()
-    @IsUrl()
+    // @IsUrl()
     thumbnail: string;
 
     @IsOptional()
