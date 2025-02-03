@@ -65,9 +65,7 @@ export class BundleService {
     async update(updateBundleDto: UpdateBundleDto) {
         const bundle = await this.findById(updateBundleDto.id);
 
-        const domain = this.mapper.toDomain(bundle);
-
-        if (!domain.isOwner(updateBundleDto.reqUser))
+        if (bundle.user_id !== updateBundleDto.reqUser.id)
             throw new BundleForbiddenException();
 
         const entity = this.mapper.updateDtoToEntity(updateBundleDto);
@@ -80,9 +78,7 @@ export class BundleService {
     async remove(removeBundleDto: RemoveBundleDto) {
         const bundle = await this.findById(removeBundleDto.id);
 
-        const domain = this.mapper.toDomain(bundle);
-
-        if (!domain.isOwner(removeBundleDto.reqUser))
+        if (bundle.user_id !== removeBundleDto.reqUser.id)
             throw new BundleForbiddenException();
 
         const entity = this.mapper.removeDtoToEntity(removeBundleDto);
@@ -95,11 +91,7 @@ export class BundleService {
         this.logger.log(`트랙 추가 요청 Dto : ${JSON.stringify(addTrackDto)}`);
         const bundle = await this.findById(addTrackDto.id);
 
-        const domain = this.mapper.toDomain(bundle);
-
-        const isOwner = domain.isOwner(addTrackDto.reqUser);
-
-        if (!isOwner) {
+        if (bundle.user_id !== addTrackDto.reqUser.id ) {
             throw new BundleForbiddenException();
         }
 
@@ -109,9 +101,7 @@ export class BundleService {
     async findTracksByBundle(uuid: UUID, user: RequestUser) {
         const bundle = await this.findById(uuid);
 
-        const domain = this.mapper.toDomain(bundle);
-
-        if (!domain.isOwner(user)) {
+        if (bundle.is_private && user.id !== user.id) {
             throw new BundleForbiddenException();
         }
 

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Mapper } from '@common/base/mapper.base';
 import { randomUUID } from 'crypto';
 
-import { Bundle } from './domain/bundle';
 import { BundleEntity } from './domain/entities/bundle.entity';
 import { BundleModel } from './domain/model/bundle.model';
 import { CreateBundleDto } from './domain/dto/create-bundle.dto';
@@ -12,14 +11,11 @@ import { BundleDto } from './domain/dto/bundle.dto';
 
 @Injectable()
 export class BundleMapper implements Mapper<
-    Bundle, BundleModel, BundleEntity, 
+    never, BundleModel, BundleEntity, 
     CreateBundleDto, UpdateBundleDto, RemoveBundleDto
 > {
-    toDomain(model: BundleModel): Bundle {
-        return new Bundle(
-            model.user_id, 
-            model.id
-        );
+    toDomain(): never {
+        throw new Error('method not Implement');
     }
 
     toDto(model: BundleModel): BundleDto {

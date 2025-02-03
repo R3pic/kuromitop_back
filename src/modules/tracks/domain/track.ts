@@ -1,4 +1,4 @@
-import { BundleID } from './model/bundle.model';
+import { BundleID } from '@bundle/domain/model/bundle.model';
 
 export class Track {
     constructor(

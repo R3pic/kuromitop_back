@@ -3,7 +3,7 @@ import {
     UseGuards, HttpCode, HttpStatus, ParseIntPipe,
 } from '@nestjs/common';
 
-import { JwtAuthGuard } from '@common/guard/auth.guard';
+import { JwtAuthGuard, OptionalAuthGuard } from '@common/guard/auth.guard';
 import { ReqUser } from '@common/decorator/req-user.decorator';
 import { RequestUser } from '@common/request-user';
 import { routes } from '@common/config/routes';
@@ -37,7 +37,7 @@ export class TrackController {
         return await this.trackService.addCommentToTrack(addCommentDto);
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(OptionalAuthGuard)
     @Get(routes.track.comments)
     @HttpCode(HttpStatus.OK)
     async getTrackComments(

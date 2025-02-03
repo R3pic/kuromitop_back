@@ -24,7 +24,7 @@ export class TrackRepository {
             RETURNING *
             `;
         
-        const result = await this.txHost.tx.one<BundleTrackModel>(query, [
+        const result = await this.txHost.tx.one<Pick<BundleTrackModel, 'music_id' | 'bundle_id'>>(query, [
             entity.music_id,
             entity.bundle_id,
         ]);
@@ -34,13 +34,14 @@ export class TrackRepository {
 
     async findById(trackId: number) {
         const query = `
-            SELECT BundleTracks.*, Bundle.user_id
-            FROM music.bundle_tracks BundleTracks, member.bundle Bundle
+            SELECT BundleTracks.*, Bundle.is_private, Bundle.user_id, Music.title, Music.artist, Music.thumbnail
+            FROM music.bundle_tracks BundleTracks, member.bundle Bundle, music.info Music
             WHERE BundleTracks.bundle_id = Bundle.id
+            AND BundleTracks.music_id = Music.id
             AND BundleTracks.id = $1
             `;
         
-        const result = await this.txHost.tx.oneOrNone<BundleTrackModel & { user_id: number }>(query, [trackId]);
+        const result = await this.txHost.tx.oneOrNone<BundleTrackModel>(query, [trackId]);
         return result;
     }
 

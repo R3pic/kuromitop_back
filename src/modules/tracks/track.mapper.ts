@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { Mapper } from '@common/base/mapper.base';
 
-import { Track } from '@bundle/domain/track';
+import { Track } from '@tracks/domain/track';
 import { TrackEntity } from './domain/entities/track.entity';
 import { MusicEntity } from './domain/entities/music.entity';
 import { TrackModel } from './domain/model/track.model';
