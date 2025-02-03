@@ -7,6 +7,7 @@ import { UserService } from '@user/user.service';
 import { RegisterDto } from './dto/register.dto';
 import { InvalidLocalCredentialException } from './auth.error';
 import { LoginDto } from './dto/login.dto';
+import { UserNotFoundException } from '@user/user.error';
 
 @Injectable()
 export class AuthService {
@@ -30,15 +31,19 @@ export class AuthService {
     }
 
     async validateUser(loginDto: LoginDto) {
-        const user = await this.userService.findByUsername(loginDto.username);
-        if (!user)
-            throw new InvalidLocalCredentialException();
-
-        const isEqual = await user.validatePassword(loginDto.password);
-        
-        if (!isEqual) 
-            throw new InvalidLocalCredentialException();
-
-        return new RequestUser(user.id, user.username);
+        try {
+            const user = await this.userService.findByUsername(loginDto.username);
+    
+            const isEqual = await user.validatePassword(loginDto.password);
+            
+            if (!isEqual) 
+                throw new InvalidLocalCredentialException();
+    
+            return new RequestUser(user.id, user.username);
+        } catch (e) {
+            if (e instanceof UserNotFoundException)
+                throw new InvalidLocalCredentialException();
+            throw e;
+        }
     }
 }
