@@ -3,7 +3,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { AuthService } from './auth.service';
 import { AuthRepository } from './auth.repository';
 import { UserService } from '@user/user.service';
-import { UserServiceException } from '@user/user.error';
+import { UserServiceException } from '@user/user.errors';
 import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
 import { CryptService } from '@common/utils/crypt';
@@ -12,7 +12,7 @@ import { getMockTransactionHost } from '@test/mockTransactionHost';
 import { User } from '@user/domain/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { Password } from './entities/password.entity';
-import { AuthServiceException } from './auth.error';
+import { AuthServiceException } from './auth.errors';
  
 describe('AuthService', () => {
     let service: AuthService;

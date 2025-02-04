@@ -1,4 +1,4 @@
-import { UserNotFoundException } from '@user/user.error';
+import { UserNotFoundException } from '@user/user.errors';
 import { ServiceExceptionFilter } from './service-exception.filter';
 import { ArgumentsHost, HttpStatus } from '@nestjs/common';
 

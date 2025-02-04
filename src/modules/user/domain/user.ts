@@ -1,7 +1,5 @@
-import { PASSWORD } from '@auth/constants';
 import { comparePassword, hashPassword } from '@common/utils/crypt';
-import { WeakPasswordException } from '@user/user.error';
-import { isStrongPassword } from 'class-validator';
+import { UserEntity } from './entities/user.entity';
 
 export class User {
     constructor(
@@ -17,21 +15,16 @@ export class User {
     }
 
     async updatePassword(newPassword: string) {
-        const isStrong = isStrongPassword(newPassword, PASSWORD);
-
-        if (!isStrong) {
-            throw new WeakPasswordException();
-        }
-
         this._password = await hashPassword(newPassword);
         this._updated_at = new Date();
     }
 
-    getpassword() {
-        return this._password;
-    }
-
-    getUpdatedAt() {
-        return this._updated_at;
+    toEntity() {
+        return new UserEntity.Builder()
+            .setId(this.id)
+            .setUsername(this.username)
+            .setPassword(this._password)
+            .setUpdatedAt(this._updated_at)
+            .build();
     }
 }

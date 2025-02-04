@@ -2,7 +2,7 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthService } from '@auth/auth.service';
-import { InvalidLocalCredentialException } from '@auth/auth.error';
+import { InvalidLocalCredentialException } from '@auth/auth.errors';
 import { LoginDto } from '@auth/dto/login.dto';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';

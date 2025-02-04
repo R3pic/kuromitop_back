@@ -5,9 +5,9 @@ import { Transactional } from '@nestjs-cls/transactional';
 import { RequestUser } from '@common/request-user';
 import { UserService } from '@user/user.service';
 import { RegisterDto } from './dto/register.dto';
-import { InvalidLocalCredentialException } from './auth.error';
+import { InvalidLocalCredentialException } from './auth.errors';
 import { LoginDto } from './dto/login.dto';
-import { UserNotFoundException } from '@user/user.error';
+import { UserNotFoundException } from '@user/user.errors';
 
 @Injectable()
 export class AuthService {

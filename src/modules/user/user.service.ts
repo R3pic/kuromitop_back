@@ -10,7 +10,7 @@ import { CreateUserDto } from './domain/dto/create-user.dto';
 import { CreateProfileDto } from './domain/dto/create-profile.dto';
 import { UpdateProfileDto } from './domain/dto/update-profile.dto';
 import { RequestUser } from '@common/request-user';
-import { UsernameAlreadyExistsException, UserNotFoundException } from './user.error';
+import { UsernameAlreadyExistsException, UserNotFoundException } from './user.errors';
 
 @Injectable()
 export class UserService {
