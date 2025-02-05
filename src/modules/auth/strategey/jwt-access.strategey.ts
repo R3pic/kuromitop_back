@@ -6,14 +6,14 @@ import { EnvironmentVariables } from '@common/env/env.validator';
 import { RequestUser } from '@common/request-user';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
-    logger = new Logger(JwtStrategy.name);
+export class AccessJwtStrategy extends PassportStrategy(Strategy, 'access') {
+    logger = new Logger(AccessJwtStrategy.name);
     constructor(
         private readonly configService: ConfigService<EnvironmentVariables, true>,
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: configService.get<string>('JWT_SECRET'),
+            secretOrKey: configService.get<string>('ACCESS_TOKEN_SECRET'),
         });
     }
 

@@ -1,8 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Transactional } from '@nestjs-cls/transactional';
 
 import { RequestUser } from '@common/request-user';
+import { EnvironmentVariables } from '@common/env/env.validator';
 import { UserService } from '@user/user.service';
 import { RegisterDto } from './dto/register.dto';
 import { InvalidLocalCredentialException } from './auth.errors';
@@ -15,6 +17,7 @@ export class AuthService {
     constructor(
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
+        private readonly configService: ConfigService<EnvironmentVariables, true>
     ) {}
 
     @Transactional()
@@ -22,19 +25,24 @@ export class AuthService {
         await this.userService.create(registerDto);
     }
 
-    async login(user: RequestUser) {
-        const payload: RequestUser = {
-            ...user,
+    async login(reqUser: RequestUser) {
+        const accessToken = await this.getAccessToken(reqUser);
+        const refreshToken = await this.getRefreshToken(reqUser);
+        return {
+            accessToken,
+            refreshToken,
         };
+    }
 
-        return await this.jwtService.signAsync(payload);
+    async refresh(reqUser: RequestUser) {
+        const accessToken = await this.getAccessToken(reqUser);
+        return accessToken;
     }
 
     async validateUser(loginDto: LoginDto) {
         try {
             const user = await this.userService.findByUsername(loginDto.username);
-    
-            const isEqual = await user.validatePassword(loginDto.password);
+            const isEqual = await user.comparePassword(loginDto.password);
             
             if (!isEqual) 
                 throw new InvalidLocalCredentialException();
@@ -45,5 +53,19 @@ export class AuthService {
                 throw new InvalidLocalCredentialException();
             throw e;
         }
+    }
+
+    private async getAccessToken(payload: RequestUser) {
+        return this.jwtService.signAsync({ ...payload }, {
+            secret: this.configService.get('ACCESS_TOKEN_SECRET'),
+            expiresIn: '60s',
+        });
+    }
+
+    private async getRefreshToken(payload: RequestUser) {
+        return this.jwtService.signAsync({ ...payload }, {
+            secret: this.configService.get('REFRESH_TOKEN_SECRET'),
+            expiresIn: '1h',
+        });
     }
 }

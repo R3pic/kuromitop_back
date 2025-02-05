@@ -10,7 +10,7 @@ export class User {
         private _updated_at: Date,
     ) {}
 
-    async validatePassword(inputPassword: string): Promise<boolean> {
+    async comparePassword(inputPassword: string): Promise<boolean> {
         return await comparePassword(this._password, inputPassword);
     }
 

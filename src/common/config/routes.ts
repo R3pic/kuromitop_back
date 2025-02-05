@@ -11,6 +11,7 @@ export const routes = {
         root: `/${authRoot}`,
         register: '/register',
         login: '/login',
+        refresh: '/refresh',
     },
     bundle: {
         root: `/${bundleRoot}`,

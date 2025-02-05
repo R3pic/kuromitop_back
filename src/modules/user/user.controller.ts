@@ -26,6 +26,14 @@ export class UserController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get(routes.user.me)
+    async getProfile(
+        @ReqUser() reqUser: RequestUser
+    ) {
+        return await this.userService.findProfileByUsername(reqUser.username, reqUser);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Patch(routes.user.me)
     async updateProfile(
         @ReqUser() reqUser: RequestUser,

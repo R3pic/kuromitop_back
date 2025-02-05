@@ -9,6 +9,8 @@ import { RequestUser } from '@common/request-user';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { routes } from '@common/config/routes';
+import { RefreshAuthGuard } from '@common/guard/auth.guard';
+import { tokenCookieOptions } from './constants';
 
 @Controller(routes.auth.root)
 export class AuthController {
@@ -30,12 +32,20 @@ export class AuthController {
     async login(
         @ReqUser() user: RequestUser,
         @Res({ passthrough: true }) res: Response
-    ): Promise<void> {
-        const access_token = await this.authService.login(user);
+    ) {
+        const { accessToken, refreshToken } = await this.authService.login(user);
+        res.cookie('access_token', accessToken, tokenCookieOptions);
+        res.cookie('refresh_token', refreshToken, tokenCookieOptions);
+    }
 
-        res.cookie('access_token', access_token, {
-            httpOnly: true,
-            secure: true,
-        });
+    @UseGuards(RefreshAuthGuard)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Post(routes.auth.refresh)
+    async refresh(
+        @ReqUser() user: RequestUser,
+        @Res({ passthrough: true }) res: Response
+    ) {
+        const accessToken = await this.authService.refresh(user);
+        res.cookie('access_token', accessToken, tokenCookieOptions);
     }
 }

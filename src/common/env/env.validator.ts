@@ -10,7 +10,9 @@ export enum Environment {
 
 export class EnvironmentVariables {
     @IsString()
-    JWT_SECRET: string;
+    ACCESS_TOKEN_SECRET: string;
+    @IsString()
+    REFRESH_TOKEN_SECRET: string;
     @IsEnum(Environment)
     NODE_ENV: Environment;
     @IsNumber()

@@ -4,24 +4,18 @@ import { AuthController } from './auth.controller';
 import { PostgresModule } from '@common/database/postgres.module';
 import { UserModule } from '@user/user.module';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { EnvironmentVariables } from '@common/env/env.validator';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategey/local.strategey';
-import { JwtStrategy } from './strategey/jwt.strategey';
+import { AccessJwtStrategy } from './strategey/jwt-access.strategey';
+import { RefreshJwtStrategy } from './strategey/jwt-refresh.strategey';
 import { PublicStrategey } from './strategey/anonymous.strategey';
 
 @Module({
     imports: [
-        JwtModule.registerAsync({
-            global: true,
-            inject: [ConfigService],
-            useFactory: (configService: ConfigService<EnvironmentVariables>) => ({
-                secret: configService.get<string>('JWT_SECRET'),
-                signOptions: {
-                    expiresIn: '360s',
-                },
-            }),
+        JwtModule.register({
+            signOptions: {
+                expiresIn: '360s',
+            },
         }),
         PassportModule,
         PostgresModule,
@@ -31,7 +25,8 @@ import { PublicStrategey } from './strategey/anonymous.strategey';
     providers: [
         AuthService, 
         LocalStrategy,
-        JwtStrategy,
+        AccessJwtStrategy,
+        RefreshJwtStrategy,
         PublicStrategey,
     ],
     exports: [PassportModule],

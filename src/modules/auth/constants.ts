@@ -17,3 +17,8 @@ export const PASSWORD: IsStrongPasswordOptions = {
     minLowercase: 0,
     minNumbers: 0,
 };
+
+export const tokenCookieOptions = {
+    httpOnly: true,
+    secure: true,
+};

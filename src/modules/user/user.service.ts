@@ -27,10 +27,7 @@ export class UserService {
         try {
             const userEntity = await this.mapper.createDtoToEntity(createUserDto);
             const user = await this.userRepository.create(userEntity);
-            this.logger.log(user);
-
-            const profile = await this.createProfile(new CreateProfileDto(user.id));
-            this.logger.log(profile);
+            await this.createProfile(new CreateProfileDto(user.id));
         } catch (e) {
             if (isDataBaseError(e, PostgresError.UNIQUE_VIOLATION))
                 throw new UsernameAlreadyExistsException();
@@ -87,6 +84,7 @@ export class UserService {
         const bundles = await this.bundleService.findMany(username, reqUser);
 
         return {
+            username,
             ...profile,
             bundleList: bundles,
         };
