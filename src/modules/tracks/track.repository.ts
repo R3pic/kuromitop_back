@@ -99,16 +99,11 @@ export class TrackRepository {
                 MusicInfo.artist, 
                 MusicInfo.thumbnail, 
                 BundleTracks.created_at, 
-                BundleTracks.updated_at,
-                Comment.id AS comment_id,
-                Comment.content AS comment_content,
-                Comment.created_at AS comment_created_at,
-                COUNT(Comment.id) OVER (PARTITION BY BundleTracks.id) AS comment_count
-            FROM music.info MusicInfo, music.bundle_tracks BundleTracks, member.comment Comment
+                BundleTracks.updated_at
+            FROM music.info MusicInfo, music.bundle_tracks BundleTracks
             WHERE BundleTracks.music_id = MusicInfo.id 
-            AND BundleTracks.id = Comment.bundle_tracks_fk
             AND BundleTracks.bundle_id = $1
-            ORDER BY BundleTracks.id, Comment.created_at DESC
+            ORDER BY BundleTracks.id DESC
             `;
         const tracks = await this.txHost.tx.manyOrNone<TrackModel>(query, [id]);
         return tracks;
@@ -132,10 +127,15 @@ export class TrackRepository {
         AND BundleTracks.id = Comment.bundle_tracks_fk
         AND BundleTracks.bundle_id = Bundle.id
         AND Bundle.is_private = FALSE
-        ORDER BY BundleTracks.id, Comment.created_at DESC, BundleTracks.created_at DESC
+        ORDER BY BundleTracks.id DESC, Comment.created_at DESC, BundleTracks.created_at DESC
         LIMIT 10
         `;
-        const tracks = await this.txHost.tx.manyOrNone<TrackModel>(query);
+        const tracks = await this.txHost.tx.manyOrNone<TrackModel & { 
+            comment_id: number;
+            comment_content: string;
+            comment_created_at: Date;
+            comment_count: number;
+        }>(query);
         return tracks;
     }
 }

@@ -51,17 +51,22 @@ export class CommentsRepository {
         return comment;
     }
 
-    async findPreviewCommensByBunlde(bundleId: BundleID) {
+    async findPreviewCommensByBundle(bundleId: BundleID) {
         const query = `
             SELECT DISTINCT ON (BundleTracks.id)
-                Comment.*
+                Comment.*,
+                COUNT(*) OVER (PARTITION BY BundleTracks.id) AS comment_count
             FROM music.bundle_tracks BundleTracks, member.comment Comment
             WHERE BundleTracks.id = Comment.bundle_tracks_fk
             AND BundleTracks.bundle_id = $1
             ORDER BY BundleTracks.id, Comment.created_at DESC;
             `;
-        const comment = await this.txHost.tx.manyOrNone<CommentModel>(query, [bundleId]);
+        const comment = await this.txHost.tx.manyOrNone<CommentModel & { comment_count: number }>(query, [bundleId]);
         return comment;
+    }
+
+    async findPreviewCommentsByRecent() {
+
     }
 
     async findManyByBundleMusicId(trackId: number) {
@@ -69,6 +74,7 @@ export class CommentsRepository {
             SELECT *
             FROM member.comment
             WHERE bundle_tracks_fk = $1
+            ORDER BY id DESC
             `;
         const comments = await this.txHost.tx.manyOrNone<CommentModel>(query, [trackId]);
 

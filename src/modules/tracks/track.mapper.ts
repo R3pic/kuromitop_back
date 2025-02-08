@@ -33,8 +33,6 @@ export class TrackMapper implements Mapper<
             model.title,
             model.artist,
             model.thumbnail,
-            model.comment_count,
-            new CommentDto(model.comment_id, model.comment_content, model.comment_created_at),
         );
     }
 

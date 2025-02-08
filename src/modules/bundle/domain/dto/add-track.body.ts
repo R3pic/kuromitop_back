@@ -1,6 +1,4 @@
-import {
-    IsDefined, IsString, IsUrl,
-} from 'class-validator';
+import { IsDefined, IsString } from 'class-validator';
 
 export class AddTrackBody {
     @IsDefined()
@@ -12,6 +10,6 @@ export class AddTrackBody {
     artist: string;
     
     @IsDefined()
-    @IsUrl()
+    @IsString()
     thumbnail: string;
 }

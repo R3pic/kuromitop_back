@@ -24,7 +24,8 @@ export class CommentsService {
     }
 
     async findPreviewCommentsByBundle(bundleId: BundleID) {
-        return await this.commentRepository.findPreviewCommensByBunlde(bundleId);
+        const comments = await this.commentRepository.findPreviewCommensByBundle(bundleId);
+        return comments.map((comment) => ({ ...this.mapper.toDto(comment), comment_count: comment.comment_count }));
     }
 
     async findManyByBundleMusicId(trackId: number) {

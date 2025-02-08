@@ -63,17 +63,40 @@ export class TrackService {
 
     async findManyByBundleId(bundleId: BundleID) {
         const tracks = await this.trackRepository.findManyByBundleId(bundleId);
-        return tracks.map(this.mapper.toDto);
+        const comments = await this.commentsService.findPreviewCommentsByBundle(bundleId);
+        return tracks.map((track) => {
+            const trackDto = this.mapper.toDto(track);
+            const comment = comments.find((comment) => comment.trackId === track.id);
+
+            return {
+                ...trackDto,
+                recent_comment: comment,
+            };
+        });
     }
     
     async findManyRecent() {
         const recentTracks = await this.trackRepository.findManyRecent();
-        return recentTracks.map(this.mapper.toDto);
+        return recentTracks.map((track) => {
+            const trackDto = this.mapper.toDto(track);
+
+            return {
+                ...trackDto,
+                recent_comment: {
+                    id: track.comment_id,
+                    content: track.comment_content,
+                    created_at: track.comment_created_at,
+                    comment_count: track.comment_count,
+                },
+            };
+        });
     }
 
     @Transactional()
     async addCommentToTrack(addCommentDto: AddCommentDto) {
         const track = await this.trackRepository.findById(addCommentDto.trackId);
+        this.logger.log(addCommentDto.reqUser);
+        this.logger.log(track?.user_id);
         if (track == null)
             throw new TrackNotFoundException();
 

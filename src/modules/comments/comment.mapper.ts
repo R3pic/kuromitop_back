@@ -15,6 +15,7 @@ export class CommentMapper implements Mapper<
 
     toDto(model: CommentModel): CommentDto {
         return new CommentDto(
+            model.bundle_tracks_fk,
             model.id,
             model.content,
             model.created_at
