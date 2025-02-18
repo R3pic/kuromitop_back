@@ -19,6 +19,6 @@ export const PASSWORD: IsStrongPasswordOptions = {
 };
 
 export const tokenCookieOptions = {
-    httpOnly: true,
+    httpOnly: false,
     secure: true,
 };

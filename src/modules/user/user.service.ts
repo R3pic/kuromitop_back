@@ -84,9 +84,11 @@ export class UserService {
         const bundles = await this.bundleService.findMany(username, reqUser);
 
         return {
-            username,
-            ...profile,
-            bundleList: bundles,
+            user: {
+                name: username,
+                ...profile,
+            },
+            bundles,
         };
     }
 }

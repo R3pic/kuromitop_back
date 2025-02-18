@@ -115,14 +115,17 @@ export class TrackService {
         if (!track)
             throw new TrackNotFoundException();
 
-        if (track.is_private && track.user_id !== reqUser.id)
+        if (track.is_private && (reqUser && reqUser.id !== track.user_id))
             throw new TrackForbiddenException();
 
         const comments = await this.commentsService.findManyByBundleMusicId(trackId);
         return {
-            title: track.title,
-            artist: track.artist,
-            thumbnail: track.thumbnail,
+            track: {
+                owner: track.user_id,
+                title: track.title,
+                artist: track.artist,
+                thumbnail: track.thumbnail,
+            },
             comments,
         };
     }
