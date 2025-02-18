@@ -98,11 +98,11 @@ export class BundleService {
         return await this.trackService.create(addTrackDto);
     }
 
-    async findTracksByBundle(uuid: UUID, user: RequestUser) {
-        this.logger.log(`FindTracksByBundle : ${uuid}`);
+    async findTracksByBundle(uuid: UUID, user: RequestUser | null) {
+        this.logger.log(`FindTracksByBundle : ${uuid} ${JSON.stringify(user)}`);
         const bundle = await this.findById(uuid);
 
-        if (bundle.is_private && (user && user.id !== bundle.user_id)) {
+        if (bundle.is_private && (user?.id !== bundle.user_id)) {
             throw new BundleForbiddenException();
         }
 

@@ -1,6 +1,6 @@
 import { RequestUser } from '@common/request-user';
 
 export class RemoveTrackDto {
-    track_id: number;
+    trackId: number;
     reqUser: RequestUser;
 }

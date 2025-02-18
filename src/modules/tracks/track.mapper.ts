@@ -9,7 +9,6 @@ import { TrackModel } from './domain/model/track.model';
 import { CreateTrackDto } from './domain/dto/create-music.dto';
 import { RemoveTrackDto } from './domain/dto/remove-track.dto';
 import { TrackDto } from './domain/dto/track.dto';
-import { CommentDto } from '@comments/domain/dto/comment.dto';
 
 @Injectable()
 export class TrackMapper implements Mapper<
@@ -53,8 +52,8 @@ export class TrackMapper implements Mapper<
     }
 
     removeDtoToEntity(dto: RemoveTrackDto): TrackEntity {
-        throw new TrackEntity.Builder()
-            .setId(dto.track_id)
+        return new TrackEntity.Builder()
+            .setId(dto.trackId)
             .build();
     }
 }

@@ -56,9 +56,16 @@ export class TrackService {
 
     @Transactional()
     async remove(removeTrackDto: RemoveTrackDto) {
+        this.logger.log(`트랙 삭제 요청 : ${JSON.stringify(removeTrackDto)}`);
+        const track = await this.trackRepository.findById(removeTrackDto.trackId);
+        if (!track)
+            throw new TrackNotFoundException();
+
+        if (track.user_id !== removeTrackDto.reqUser.id)
+            throw new TrackForbiddenException();
+
         const entity = this.mapper.removeDtoToEntity(removeTrackDto);
-        const track = await this.trackRepository.remove(entity);
-        return track;
+        await this.trackRepository.remove(entity);
     }
 
     async findManyByBundleId(bundleId: BundleID) {

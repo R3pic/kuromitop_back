@@ -1,6 +1,6 @@
 import {
-    Controller, Get, Post, Param, Body, 
-    UseGuards, HttpCode, HttpStatus, ParseIntPipe,
+    Controller, Get, Post, Param, Body,
+    UseGuards, HttpCode, HttpStatus, ParseIntPipe, Delete,
 } from '@nestjs/common';
 
 import { JwtAuthGuard, OptionalAuthGuard } from '@common/guard/auth.guard';
@@ -11,6 +11,9 @@ import { routes } from '@common/config/routes';
 import { TrackService } from './track.service';
 import { AddCommentBody } from './domain/dto/add-comment.body';
 import { AddCommentDto } from './domain/dto/add-comment.dto';
+import {UUIDParam} from '@common/decorator/uuid-Param.decorator';
+import {BundleID} from '@bundle/domain/model/bundle.model';
+import {RemoveTrackDto} from '@tracks/domain/dto/remove-track.dto';
 
 @Controller(routes.track.root)
 export class TrackController {
@@ -20,8 +23,8 @@ export class TrackController {
 
     @HttpCode(HttpStatus.OK)
     @Get(routes.track.recentComments)
-    findManyRecent() {
-        return this.trackService.findManyRecent();
+    async findManyRecent() {
+        return await this.trackService.findManyRecent();
     }
 
     @UseGuards(JwtAuthGuard)
@@ -45,5 +48,18 @@ export class TrackController {
         @ReqUser() reqUser: RequestUser
     ) {
         return await this.trackService.getTrackComments(trackId, reqUser);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Delete(routes.track.detail)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deleteTrack(
+        @Param('trackid', ParseIntPipe) trackId: number,
+        @ReqUser() reqUser: RequestUser,
+    ) {
+        await this.trackService.remove({
+            trackId,
+            reqUser,
+        });
     }
 }

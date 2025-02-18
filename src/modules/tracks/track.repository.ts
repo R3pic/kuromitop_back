@@ -46,6 +46,7 @@ export class TrackRepository {
     }
 
     async remove(entity: TrackEntity) {
+        this.logger.log(entity);
         const query = `
             DELETE
             FROM music.bundle_tracks
