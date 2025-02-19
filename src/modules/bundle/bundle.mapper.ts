@@ -21,7 +21,8 @@ export class BundleMapper implements Mapper<
     toDto(model: BundleModel): BundleDto {
         return new BundleDto(
             model.id,
-            model.title
+            model.title,
+            model.is_private,
         );
     }
 
