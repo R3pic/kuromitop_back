@@ -11,41 +11,41 @@ import { BundleDto } from './domain/dto/bundle.dto';
 
 @Injectable()
 export class BundleMapper implements Mapper<
-    never, BundleModel, BundleEntity, 
-    CreateBundleDto, UpdateBundleDto, RemoveBundleDto
+  never, BundleModel, BundleEntity, 
+  CreateBundleDto, UpdateBundleDto, RemoveBundleDto
 > {
-    toDomain(): never {
-        throw new Error('method not Implement');
-    }
+  toDomain(): never {
+    throw new Error('method not Implement');
+  }
 
-    toDto(model: BundleModel): BundleDto {
-        return new BundleDto(
-            model.id,
-            model.title,
-            model.is_private,
-        );
-    }
+  toDto(model: BundleModel): BundleDto {
+    return new BundleDto(
+      model.id,
+      model.title,
+      model.is_private,
+    );
+  }
 
-    createDtoToEntity(dto: CreateBundleDto): BundleEntity {
-        return new BundleEntity.Builder()
-            .setId(randomUUID())
-            .setUserId(dto.reqUser.id)
-            .setTitle(dto.title)
-            .setIsPrivate(dto.is_private)
-            .build();
-    }
+  createDtoToEntity(dto: CreateBundleDto): BundleEntity {
+    return new BundleEntity.Builder()
+      .setId(randomUUID())
+      .setUserId(dto.reqUser.id)
+      .setTitle(dto.title)
+      .setIsPrivate(dto.is_private)
+      .build();
+  }
     
-    updateDtoToEntity(dto: UpdateBundleDto): BundleEntity {
-        return new BundleEntity.Builder()
-            .setId(dto.id)
-            .setTitle(dto.title)
-            .setIsPrivate(dto.is_private)
-            .build();
-    }
+  updateDtoToEntity(dto: UpdateBundleDto): BundleEntity {
+    return new BundleEntity.Builder()
+      .setId(dto.id)
+      .setTitle(dto.title)
+      .setIsPrivate(dto.is_private)
+      .build();
+  }
 
-    removeDtoToEntity(dto: RemoveBundleDto): BundleEntity {
-        return new BundleEntity.Builder()
-            .setId(dto.id)
-            .build();
-    }
+  removeDtoToEntity(dto: RemoveBundleDto): BundleEntity {
+    return new BundleEntity.Builder()
+      .setId(dto.id)
+      .build();
+  }
 }

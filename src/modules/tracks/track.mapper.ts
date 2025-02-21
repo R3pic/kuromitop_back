@@ -12,48 +12,48 @@ import { TrackDto } from './domain/dto/track.dto';
 
 @Injectable()
 export class TrackMapper implements Mapper<
-    Track, TrackModel, TrackEntity,
-    never, never, RemoveTrackDto
+  Track, TrackModel, TrackEntity,
+  never, never, RemoveTrackDto
 > {
-    toDomain(model: TrackModel): Track {
-        return new Track(
-            model.id,
-            model.bundle_id,
-            model.music_id,
-            model.title,
-            model.artist,
-            model.thumbnail,
-        );
-    }
+  toDomain(model: TrackModel): Track {
+    return new Track(
+      model.id,
+      model.bundle_id,
+      model.music_id,
+      model.title,
+      model.artist,
+      model.thumbnail,
+    );
+  }
 
-    toDto(model: TrackModel): TrackDto {
-        return new TrackDto(
-            model.id,
-            model.title,
-            model.artist,
-            model.thumbnail,
-        );
-    }
+  toDto(model: TrackModel): TrackDto {
+    return new TrackDto(
+      model.id,
+      model.title,
+      model.artist,
+      model.thumbnail,
+    );
+  }
 
-    createDtoToMusicEntity(dto: CreateTrackDto): MusicEntity {
-        return new MusicEntity.Builder()
-            .setTitle(dto.title)
-            .setArtist(dto.artist)
-            .setThumbnail(dto.thumbnail)
-            .build();
-    }
+  createDtoToMusicEntity(dto: CreateTrackDto): MusicEntity {
+    return new MusicEntity.Builder()
+      .setTitle(dto.title)
+      .setArtist(dto.artist)
+      .setThumbnail(dto.thumbnail)
+      .build();
+  }
 
-    createDtoToEntity(): never {
-        throw new Error('Method not implemented.');
-    }
+  createDtoToEntity(): never {
+    throw new Error('Method not implemented.');
+  }
 
-    updateDtoToEntity(): never {
-        throw new Error('Method not implemented.');
-    }
+  updateDtoToEntity(): never {
+    throw new Error('Method not implemented.');
+  }
 
-    removeDtoToEntity(dto: RemoveTrackDto): TrackEntity {
-        return new TrackEntity.Builder()
-            .setId(dto.trackId)
-            .build();
-    }
+  removeDtoToEntity(dto: RemoveTrackDto): TrackEntity {
+    return new TrackEntity.Builder()
+      .setId(dto.trackId)
+      .build();
+  }
 }

@@ -1,6 +1,5 @@
 export class RequestUser {
-    constructor(
-        public readonly id: number, 
-        public readonly username: string,
-    ) {}
+  constructor(
+    public readonly id: string
+  ) {}
 }

@@ -8,51 +8,51 @@ import { BundleID } from '@bundle/domain/model/bundle.model';
 
 @Injectable()
 export class CommentsRepository {
-    private readonly logger = new Logger(CommentsRepository.name);
+  private readonly logger = new Logger(CommentsRepository.name);
 
-    constructor(
-        private readonly txHost: TransactionHost<TransactionalAdapterPgPromise>
-    ) {}
+  constructor(
+    private readonly txHost: TransactionHost<TransactionalAdapterPgPromise>
+  ) {}
 
-    async create(entity: CommentEntity) {
-        const query = `
+  async create(entity: CommentEntity) {
+    const query = `
             INSERT INTO member.comment (bundle_tracks_fk, content)
             VALUES ($1, $2)
             RETURNING *
             `;
-        const comment = await this.txHost.tx.one<CommentModel>(query, [
-            entity.trackId,
-            entity.content,
-        ]);
+    const comment = await this.txHost.tx.one<CommentModel>(query, [
+      entity.trackId,
+      entity.content,
+    ]);
 
-        return comment;
-    }
+    return comment;
+  }
 
-    async findById(id: number) {
-        const query = `
+  async findById(id: number) {
+    const query = `
             SELECT Bundle.user_id, Comment.*
             FROM member.comment Comment, music.bundle_tracks BundleTrack, member.bundle Bundle
             WHERE BundleTrack.id = Comment.bundle_tracks_fk
             AND BundleTrack.bundle_id = Bundle.id
             AND Comment.id = $1
             `;
-        const model = await this.txHost.tx.oneOrNone<CommentModel & { user_id: number }>(query, [id]);
-        return model;
-    }
+    const model = await this.txHost.tx.oneOrNone<CommentModel & { user_id: string }>(query, [id]);
+    return model;
+  }
 
-    async remove(entity: CommentEntity) {
-        const query = `
+  async remove(entity: CommentEntity) {
+    const query = `
             DELETE
             FROM member.comment
             WHERE id = $1
             RETURNING *
             `;
-        const comment = await this.txHost.tx.one<CommentModel>(query, [entity.id]);
-        return comment;
-    }
+    const comment = await this.txHost.tx.one<CommentModel>(query, [entity.id]);
+    return comment;
+  }
 
-    async findPreviewCommensByBundle(bundleId: BundleID) {
-        const query = `
+  async findPreviewCommensByBundle(bundleId: BundleID) {
+    const query = `
             SELECT DISTINCT ON (BundleTracks.id)
                 Comment.*,
                 COUNT(*) OVER (PARTITION BY BundleTracks.id) AS comment_count
@@ -61,23 +61,23 @@ export class CommentsRepository {
             AND BundleTracks.bundle_id = $1
             ORDER BY BundleTracks.id, Comment.created_at DESC;
             `;
-        const comment = await this.txHost.tx.manyOrNone<CommentModel & { comment_count: number }>(query, [bundleId]);
-        return comment;
-    }
+    const comment = await this.txHost.tx.manyOrNone<CommentModel & { comment_count: number }>(query, [bundleId]);
+    return comment;
+  }
 
-    async findPreviewCommentsByRecent() {
+  async findPreviewCommentsByRecent() {
 
-    }
+  }
 
-    async findManyByBundleMusicId(trackId: number) {
-        const query = `
+  async findManyByBundleMusicId(trackId: number) {
+    const query = `
             SELECT *
             FROM member.comment
             WHERE bundle_tracks_fk = $1
             ORDER BY id DESC
             `;
-        const comments = await this.txHost.tx.manyOrNone<CommentModel>(query, [trackId]);
+    const comments = await this.txHost.tx.manyOrNone<CommentModel>(query, [trackId]);
 
-        return comments;
-    }
+    return comments;
+  }
 }

@@ -1,3 +1,3 @@
 export const BUNDLE_TITLE = {
-    MAX_LENGTH: 20,
+  MAX_LENGTH: 20,
 };

@@ -6,37 +6,37 @@ import { RemoveCommentDto } from './domain/dto/remove-comment.dto';
 import { CommentDto } from './domain/dto/comment.dto';
 
 export class CommentMapper implements Mapper<
-    never, CommentModel, CommentEntity,
-    CreateCommentDto, never, RemoveCommentDto 
+  never, CommentModel, CommentEntity,
+  CreateCommentDto, never, RemoveCommentDto 
 > {
-    toDomain(): never {
-        throw new Error('Method not implemented.');
-    }
+  toDomain(): never {
+    throw new Error('Method not implemented.');
+  }
 
-    toDto(model: CommentModel): CommentDto {
-        return new CommentDto(
-            model.bundle_tracks_fk,
-            model.id,
-            model.content,
-            model.created_at
-        );
-    }
+  toDto(model: CommentModel): CommentDto {
+    return new CommentDto(
+      model.bundle_tracks_fk,
+      model.id,
+      model.content,
+      model.created_at
+    );
+  }
 
-    createDtoToEntity(dto: CreateCommentDto): CommentEntity {
-        return new CommentEntity.Builder()
-            .setTrackId(dto.trackId)
-            .setContent(dto.content)
-            .build();
-    }
+  createDtoToEntity(dto: CreateCommentDto): CommentEntity {
+    return new CommentEntity.Builder()
+      .setTrackId(dto.trackId)
+      .setContent(dto.content)
+      .build();
+  }
 
-    updateDtoToEntity(): never {
-        throw new Error('Method not implemented.');
-    }
+  updateDtoToEntity(): never {
+    throw new Error('Method not implemented.');
+  }
 
-    removeDtoToEntity(dto: RemoveCommentDto): CommentEntity {
-        return new CommentEntity.Builder()
-            .setId(dto.id)
-            .build();
-    }
+  removeDtoToEntity(dto: RemoveCommentDto): CommentEntity {
+    return new CommentEntity.Builder()
+      .setId(dto.id)
+      .build();
+  }
 
 }

@@ -1,12 +1,12 @@
 import {
-    Controller,
-    UseGuards,
-    Param,
-    ParseIntPipe,
-    Delete,
-    Logger,
-    HttpCode,
-    HttpStatus, 
+  Controller,
+  UseGuards,
+  Param,
+  ParseIntPipe,
+  Delete,
+  Logger,
+  HttpCode,
+  HttpStatus, 
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { ReqUser } from '@common/decorator/req-user.decorator';
@@ -18,20 +18,20 @@ import { routes } from '@common/config/routes';
 @UseGuards(JwtAuthGuard)
 @Controller(routes.comment.root)
 export class CommentsController {
-    private readonly logger = new Logger(CommentsController.name);
+  private readonly logger = new Logger(CommentsController.name);
 
-    constructor(
-        private readonly commentsService: CommentsService
-    ) {}
+  constructor(
+    private readonly commentsService: CommentsService
+  ) {}
 
-    @Delete(routes.comment.detail)
-    @HttpCode(HttpStatus.NO_CONTENT)
-    async remove(
-        @Param('id', ParseIntPipe) id: number,
-        @ReqUser() reqUser: RequestUser
-    ) {
-        const removeCommentDto = new RemoveCommentDto(id, reqUser);
+  @Delete(routes.comment.detail)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @ReqUser() reqUser: RequestUser
+  ) {
+    const removeCommentDto = new RemoveCommentDto(id, reqUser);
 
-        return await this.commentsService.remove(removeCommentDto);
-    }
+    return await this.commentsService.remove(removeCommentDto);
+  }
 }

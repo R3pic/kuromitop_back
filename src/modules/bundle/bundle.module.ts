@@ -9,16 +9,16 @@ import { BundleRepository } from './bundle.repository';
 import { BundleMapper } from './bundle.mapper';
 
 @Module({
-    imports: [
-        PostgresModule,
-        TrackModule,
-    ],
-    exports: [BundleService],
-    controllers: [BundleController],
-    providers: [ 
-        BundleService, 
-        BundleMapper,
-        BundleRepository,
-    ],
+  imports: [
+    PostgresModule,
+    TrackModule,
+  ],
+  exports: [BundleService],
+  controllers: [BundleController],
+  providers: [ 
+    BundleService, 
+    BundleMapper,
+    BundleRepository,
+  ],
 })
 export class BundleModule {}

@@ -4,12 +4,12 @@ import { TransactionalAdapterPgPromise } from '@nestjs-cls/transactional-adapter
 import { ClsModuleOptions } from 'nestjs-cls';
 
 export const clsModuleOptions: ClsModuleOptions = {
-    plugins: [
-        new ClsPluginTransactional({
-            imports: [PostgresModule],
-            adapter: new TransactionalAdapterPgPromise({
-                dbInstanceToken: DB,
-            }),
-        }),
-    ],
+  plugins: [
+    new ClsPluginTransactional({
+      imports: [PostgresModule],
+      adapter: new TransactionalAdapterPgPromise({
+        dbInstanceToken: DB,
+      }),
+    }),
+  ],
 };

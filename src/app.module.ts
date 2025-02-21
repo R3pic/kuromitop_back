@@ -1,7 +1,7 @@
 import {
-    Module, 
-    NestModule, 
-    MiddlewareConsumer, 
+  Module, 
+  NestModule, 
+  MiddlewareConsumer, 
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { configModuleOptions } from '@common/env/env.config';
@@ -16,23 +16,23 @@ import { CommentsModule } from '@comments/comments.module';
 import { LoggerMiddleware } from '@common/logger/logger.middleware';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot(configModuleOptions),
-        ClsModule.forRoot(clsModuleOptions),
-        AuthModule, 
-        UserModule,
-        BundleModule,
-        TrackModule,
-        CommentsModule,
-    ],
-    exports: [],
-    controllers: [],
-    providers: [],
+  imports: [
+    ConfigModule.forRoot(configModuleOptions),
+    ClsModule.forRoot(clsModuleOptions),
+    AuthModule, 
+    UserModule,
+    BundleModule,
+    TrackModule,
+    CommentsModule,
+  ],
+  exports: [],
+  controllers: [],
+  providers: [],
 })
 export class AppModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer
-            .apply(LoggerMiddleware)
-            .forRoutes('*');
-    }
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*');
+  }
 }

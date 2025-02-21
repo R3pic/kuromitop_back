@@ -1,11 +1,11 @@
 import {
-    IsDefined, IsString, Length, 
+  IsDefined, IsString, Length, 
 } from 'class-validator';
 
 export class AddCommentBody {
 
-    @IsDefined()
-    @IsString()
-    @Length(5, 250)
-    content: string;
+  @IsDefined()
+  @IsString()
+  @Length(5, 250)
+  content: string;
 }

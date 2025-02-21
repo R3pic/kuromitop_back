@@ -16,29 +16,27 @@ CREATE TABLE IF NOT EXISTS music.info (
 );
 
 CREATE TABLE IF NOT EXISTS member.user (
-    id              INTEGER                     GENERATED ALWAYS AS IDENTITY,
-    username        VARCHAR(20)     NOT NULL    UNIQUE,
-    password        VARCHAR(128)    NOT NULL,
+    id              VARCHAR(100)    NOT NULL    UNIQUE,
+    display_name    VARCHAR(100)    NOT NULL,
+    thumbnail       VARCHAR(150)    NULL,
+    introduction    VARCHAR(100)    NULL,
     created_at      TIMESTAMPTZ     NOT NULL    DEFAULT now(),
     updated_at      TIMESTAMPTZ     NOT NULL    DEFAULT now(),
     PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS member.profile (
-    id              INTEGER                     GENERATED ALWAYS AS IDENTITY,
-    user_id         INTEGER         NOT NULL,
-    nickname        VARCHAR(10)     NULL,
-    thumbnail       VARCHAR(100)    NULL,
-    introduction    VARCHAR(30)     NULL,
-    created_at      TIMESTAMPTZ     NOT NULL    DEFAULT now(),
-    updated_at      TIMESTAMPTZ     NOT NULL    DEFAULT now(),
-    PRIMARY KEY (id),
-    CONSTRAINT profile_user_id_fk FOREIGN KEY (user_id) REFERENCES member.user(id)
+CREATE TABLE IF NOT EXISTS auth.token (
+    id               INTEGER                    GENERATED ALWAYS AS IDENTITY,
+    user_id          VARCHAR(255)   NOT NULL    UNIQUE,
+    access_token     VARCHAR(255)   NULL,
+    refresh_token    VARCHAR(255)   NULL,
+    created_at       TIMESTAMPTZ    NOT NULL    DEFAULT now(),
+    updated_at       TIMESTAMPTZ    NOT NULL    DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS member.bundle (
     id              UUID            NOT NULL,
-    user_id         INTEGER         NOT NULL,
+    user_id         VARCHAR(100)    NOT NULL,
     title           VARCHAR(20)     NOT NULL,
     is_private      BOOLEAN         NOT NULL,
     created_at      TIMESTAMPTZ     NOT NULL    DEFAULT now(),

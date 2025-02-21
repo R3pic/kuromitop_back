@@ -1,7 +1,7 @@
 import {
-    Controller, Get, Post, Body, Patch, Delete,
-    UseGuards, HttpCode, HttpStatus, Res,
-    Logger,
+  Controller, Get, Post, Body, Patch, Delete,
+  UseGuards, HttpCode, HttpStatus, Res,
+  Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
 
@@ -23,68 +23,68 @@ import { BundleID } from './domain/model/bundle.model';
 
 @Controller(routes.bundle.root)
 export class BundleController {
-    private readonly logger = new Logger(BundleController.name);
-    constructor(private readonly bundleService: BundleService) {}
+  private readonly logger = new Logger(BundleController.name);
+  constructor(private readonly bundleService: BundleService) {}
 
-    @UseGuards(JwtAuthGuard)
-    @HttpCode(HttpStatus.CREATED)
-    @Post()
-    async create(
-        @Body() createBundleBody: CreateBundleBody,
-        @ReqUser() reqUser: RequestUser,
-        @Res({ passthrough: true }) res: Response,
-    ) {
-        const createBundleDto = new CreateBundleDto(createBundleBody, reqUser);
-        const id = await this.bundleService.create(createBundleDto);
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  @Post()
+  async create(
+    @Body() createBundleBody: CreateBundleBody,
+    @ReqUser() reqUser: RequestUser,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const createBundleDto = new CreateBundleDto(createBundleBody, reqUser);
+    const id = await this.bundleService.create(createBundleDto);
 
-        res.setHeader('Location', routes.bundle.location(id));
-    }
+    res.setHeader('Location', routes.bundle.location(id));
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @HttpCode(HttpStatus.OK)
-    @Patch(routes.bundle.detail)
-    update(
-        @UUIDParam('uuid') bundleID: BundleID, 
-        @Body() updateBundleBody: UpdateBundleBody,
-        @ReqUser() reqUser: RequestUser,
-    ) {
-        const updateBundleDto = new UpdateBundleDto(bundleID, updateBundleBody, reqUser);
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Patch(routes.bundle.detail)
+  update(
+    @UUIDParam('uuid') bundleID: BundleID, 
+    @Body() updateBundleBody: UpdateBundleBody,
+    @ReqUser() reqUser: RequestUser,
+  ) {
+    const updateBundleDto = new UpdateBundleDto(bundleID, updateBundleBody, reqUser);
 
-        return this.bundleService.update(updateBundleDto);
-    }
+    return this.bundleService.update(updateBundleDto);
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @HttpCode(HttpStatus.NO_CONTENT)
-    @Delete(routes.bundle.detail)
-    async remove(
-        @UUIDParam('uuid') bundleID: BundleID,
-        @ReqUser() reqUser: RequestUser
-    ) {
-        const removeBundleDto = new RemoveBundleDto(bundleID, reqUser);
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(routes.bundle.detail)
+  async remove(
+    @UUIDParam('uuid') bundleID: BundleID,
+    @ReqUser() reqUser: RequestUser
+  ) {
+    const removeBundleDto = new RemoveBundleDto(bundleID, reqUser);
 
-        return await this.bundleService.remove(removeBundleDto);
-    }
+    return await this.bundleService.remove(removeBundleDto);
+  }
 
-    @UseGuards(OptionalAuthGuard)
-    @HttpCode(HttpStatus.OK)
-    @Get(routes.bundle.tracks.root)
-    async findTracksByBundle(
-        @UUIDParam('uuid') bundleID: BundleID,
-        @ReqUser() reqUser: RequestUser
-    ) {
-        return await this.bundleService.findTracksByBundle(bundleID, reqUser);
-    }
+  @UseGuards(OptionalAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get(routes.bundle.tracks.root)
+  async findTracksByBundle(
+    @UUIDParam('uuid') bundleID: BundleID,
+    @ReqUser() reqUser: RequestUser
+  ) {
+    return await this.bundleService.findTracksByBundle(bundleID, reqUser);
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @Post(routes.bundle.tracks.root)
-    @HttpCode(HttpStatus.OK)
-    async add(
-        @UUIDParam('uuid') bundleID: BundleID,
-        @Body() addTrackBody: AddTrackBody,
-        @ReqUser() reqUser: RequestUser
-    ) {
-        const addTrackDto = new AddTrackDto(bundleID, addTrackBody, reqUser);
+  @UseGuards(JwtAuthGuard)
+  @Post(routes.bundle.tracks.root)
+  @HttpCode(HttpStatus.OK)
+  async add(
+    @UUIDParam('uuid') bundleID: BundleID,
+    @Body() addTrackBody: AddTrackBody,
+    @ReqUser() reqUser: RequestUser
+  ) {
+    const addTrackDto = new AddTrackDto(bundleID, addTrackBody, reqUser);
 
-        return await this.bundleService.addTrackToBundle(addTrackDto);
-    }
+    return await this.bundleService.addTrackToBundle(addTrackDto);
+  }
 }

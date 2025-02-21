@@ -5,19 +5,17 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { UserRepository } from './user.repository';
 import { BundleModule } from '@bundle/bundle.module';
-import { UserMapper } from './user.mapper';
 
 @Module({
-    imports: [
-        PostgresModule,
-        BundleModule,
-    ],
-    exports: [UserService],
-    controllers: [UserController],
-    providers: [
-        UserService, 
-        UserMapper,
-        UserRepository,
-    ],
+  imports: [
+    PostgresModule,
+    BundleModule,
+  ],
+  exports: [UserService],
+  controllers: [UserController],
+  providers: [
+    UserService,
+    UserRepository,
+  ],
 })
 export class UserModule {}

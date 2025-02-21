@@ -11,29 +11,29 @@ import { TrackModel } from './domain/model/track.model';
 
 @Injectable()
 export class TrackRepository {
-    private readonly logger = new Logger(TrackRepository.name);
+  private readonly logger = new Logger(TrackRepository.name);
 
-    constructor(
-        private readonly txHost: TransactionHost<TransactionalAdapterPgPromise>
-    ) {}
+  constructor(
+    private readonly txHost: TransactionHost<TransactionalAdapterPgPromise>
+  ) {}
 
-    async create(entity: TrackEntity) {
-        const query = `
+  async create(entity: TrackEntity) {
+    const query = `
             INSERT INTO music.bundle_tracks (music_id, bundle_id)
             VALUES ($1, $2)
             RETURNING *
             `;
         
-        const result = await this.txHost.tx.one<Pick<BundleTrackModel, 'music_id' | 'bundle_id'>>(query, [
-            entity.music_id,
-            entity.bundle_id,
-        ]);
+    const result = await this.txHost.tx.one<Pick<BundleTrackModel, 'music_id' | 'bundle_id'>>(query, [
+      entity.music_id,
+      entity.bundle_id,
+    ]);
         
-        return result;
-    }
+    return result;
+  }
 
-    async findById(trackId: number) {
-        const query = `
+  async findById(trackId: number) {
+    const query = `
             SELECT BundleTracks.*, Bundle.is_private, Bundle.user_id, Music.title, Music.artist, Music.thumbnail
             FROM music.bundle_tracks BundleTracks, member.bundle Bundle, music.info Music
             WHERE BundleTracks.bundle_id = Bundle.id
@@ -41,59 +41,59 @@ export class TrackRepository {
             AND BundleTracks.id = $1
             `;
         
-        const result = await this.txHost.tx.oneOrNone<BundleTrackModel>(query, [trackId]);
-        return result;
-    }
+    const result = await this.txHost.tx.oneOrNone<BundleTrackModel>(query, [trackId]);
+    return result;
+  }
 
-    async remove(entity: TrackEntity) {
-        this.logger.log(entity);
-        const query = `
+  async remove(entity: TrackEntity) {
+    this.logger.log(entity);
+    const query = `
             DELETE
             FROM music.bundle_tracks
             WHERE id = $1
             RETURNING *
             `;
-        const deleted = await this.txHost.tx.oneOrNone<MusicModel>(query, [entity.id]);
-        return deleted;
-    }
+    const deleted = await this.txHost.tx.oneOrNone<MusicModel>(query, [entity.id]);
+    return deleted;
+  }
 
-    async createMusic(entity: MusicEntity) {
-        const query = `
+  async createMusic(entity: MusicEntity) {
+    const query = `
                     INSERT INTO music.info (title, artist, thumbnail)
                     VALUES ($1, $2, $3)
                     RETURNING *
                     `;
         
-        const model = await this.txHost.tx.one<MusicModel>(query, [
-            entity.title,
-            entity.artist,
-            entity.thumbnail,
-        ]);
-        return model;
-    }
+    const model = await this.txHost.tx.one<MusicModel>(query, [
+      entity.title,
+      entity.artist,
+      entity.thumbnail,
+    ]);
+    return model;
+  }
 
-    async findMusicById(trackId: number) {
-        const query = `
+  async findMusicById(trackId: number) {
+    const query = `
         SELECT *
         FROM music.info
         WHERE id = $1
         `;
-        const model = await this.txHost.tx.oneOrNone<MusicModel>(query, [trackId]);
-        return model;
-    }
+    const model = await this.txHost.tx.oneOrNone<MusicModel>(query, [trackId]);
+    return model;
+  }
 
-    async findMusicByTitle(title: string) {
-        const query = `
+  async findMusicByTitle(title: string) {
+    const query = `
         SELECT *
         FROM music.info
         WHERE title = $1
         `;
-        const model = await this.txHost.tx.oneOrNone<MusicModel>(query, [title]);
-        return model;
-    }
+    const model = await this.txHost.tx.oneOrNone<MusicModel>(query, [title]);
+    return model;
+  }
 
-    async findManyByBundleId(id: BundleID) {
-        const query = `
+  async findManyByBundleId(id: BundleID) {
+    const query = `
             SELECT DISTINCT ON (BundleTracks.id)
                 BundleTracks.id, 
                 MusicInfo.title, 
@@ -106,12 +106,12 @@ export class TrackRepository {
             AND BundleTracks.bundle_id = $1
             ORDER BY BundleTracks.id DESC
             `;
-        const tracks = await this.txHost.tx.manyOrNone<TrackModel>(query, [id]);
-        return tracks;
-    }
+    const tracks = await this.txHost.tx.manyOrNone<TrackModel>(query, [id]);
+    return tracks;
+  }
 
-    async findManyRecent() {
-        const query = `
+  async findManyRecent() {
+    const query = `
         SELECT DISTINCT ON (BundleTracks.id)
             BundleTracks.id,
             MusicInfo.title, 
@@ -131,12 +131,12 @@ export class TrackRepository {
         ORDER BY BundleTracks.id DESC, Comment.created_at DESC, BundleTracks.created_at DESC
         LIMIT 10
         `;
-        const tracks = await this.txHost.tx.manyOrNone<TrackModel & { 
-            comment_id: number;
-            comment_content: string;
-            comment_created_at: Date;
-            comment_count: number;
-        }>(query);
-        return tracks;
-    }
+    const tracks = await this.txHost.tx.manyOrNone<TrackModel & { 
+      comment_id: number;
+      comment_content: string;
+      comment_created_at: Date;
+      comment_count: number;
+    }>(query);
+    return tracks;
+  }
 }

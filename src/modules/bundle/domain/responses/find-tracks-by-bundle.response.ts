@@ -1,4 +1,4 @@
 export interface FindTracksByBundleResponse {
-    title: string;
-    tracks: [];
+  title: string;
+  tracks: [];
 }

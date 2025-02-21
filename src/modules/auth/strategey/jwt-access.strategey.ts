@@ -7,20 +7,19 @@ import { RequestUser } from '@common/request-user';
 
 @Injectable()
 export class AccessJwtStrategy extends PassportStrategy(Strategy, 'access') {
-    logger = new Logger(AccessJwtStrategy.name);
-    constructor(
-        private readonly configService: ConfigService<EnvironmentVariables, true>,
-    ) {
-        super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: configService.get<string>('ACCESS_TOKEN_SECRET'),
-        });
-    }
+  logger = new Logger(AccessJwtStrategy.name);
+  constructor(
+    private readonly configService: ConfigService<EnvironmentVariables, true>,
+  ) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: configService.get<string>('ACCESS_TOKEN_SECRET'),
+    });
+  }
 
-    validate(reqUser: RequestUser) {
-        return {
-            id: reqUser.id,
-            username: reqUser.username,
-        };
-    }
+  validate(reqUser: RequestUser): RequestUser {
+    return {
+      id: reqUser.id,
+    };
+  }
 }

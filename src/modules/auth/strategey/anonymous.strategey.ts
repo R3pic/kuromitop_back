@@ -4,11 +4,11 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PublicStrategey extends PassportStrategy(Strategy) {
-    constructor() {
-        super();
-    }
+  constructor() {
+    super();
+  }
 
-    validate() {
-        return null;
-    }
+  validate() {
+    return null;
+  }
 }

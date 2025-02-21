@@ -5,30 +5,32 @@ import { PostgresModule } from '@common/database/postgres.module';
 import { UserModule } from '@user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './strategey/local.strategey';
 import { AccessJwtStrategy } from './strategey/jwt-access.strategey';
 import { RefreshJwtStrategy } from './strategey/jwt-refresh.strategey';
 import { PublicStrategey } from './strategey/anonymous.strategey';
+import { SpotifyStrategy } from '@auth/strategey/spotify.strategey';
+import { AuthRepository } from '@auth/auth.repository';
 
 @Module({
-    imports: [
-        JwtModule.register({
-            signOptions: {
-                expiresIn: '360s',
-            },
-        }),
-        PassportModule,
-        PostgresModule,
-        UserModule,
-    ],
-    controllers: [AuthController],
-    providers: [
-        AuthService, 
-        LocalStrategy,
-        AccessJwtStrategy,
-        RefreshJwtStrategy,
-        PublicStrategey,
-    ],
-    exports: [PassportModule],
+  imports: [
+    JwtModule.register({
+      signOptions: {
+        expiresIn: '360s',
+      },
+    }),
+    PassportModule,
+    PostgresModule,
+    UserModule,
+  ],
+  controllers: [AuthController],
+  providers: [
+    AuthRepository,
+    AuthService,
+    AccessJwtStrategy,
+    RefreshJwtStrategy,
+    PublicStrategey,
+    SpotifyStrategy,
+  ],
+  exports: [PassportModule],
 })
 export class AuthModule {}

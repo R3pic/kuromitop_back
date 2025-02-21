@@ -7,16 +7,16 @@ import { TrackMapper } from './track.mapper';
 import { CommentsModule } from '@comments/comments.module';
 
 @Module({
-    imports: [
-        PostgresModule,
-        CommentsModule,
-    ],
-    exports: [TrackService],
-    controllers: [TrackController],
-    providers: [
-        TrackService, 
-        TrackMapper,
-        TrackRepository,
-    ],
+  imports: [
+    PostgresModule,
+    CommentsModule,
+  ],
+  exports: [TrackService],
+  controllers: [TrackController],
+  providers: [
+    TrackService, 
+    TrackMapper,
+    TrackRepository,
+  ],
 })
 export class TrackModule {}
