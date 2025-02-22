@@ -14,6 +14,7 @@ import { BundleModule } from '@bundle/bundle.module';
 import { TrackModule } from '@tracks/track.module';
 import { CommentsModule } from '@comments/comments.module';
 import { LoggerMiddleware } from '@common/logger/logger.middleware';
+import { SpotifyModule } from '@spotify/spotify.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { LoggerMiddleware } from '@common/logger/logger.middleware';
     BundleModule,
     TrackModule,
     CommentsModule,
+    SpotifyModule,
   ],
   exports: [],
   controllers: [],

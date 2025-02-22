@@ -8,6 +8,7 @@ import { UserService } from '@user/user.service';
 import { SpotifyProfileDto } from '@auth/dto/spotify-profile.dto';
 import { UserNotFoundException } from '@user/user.errors';
 import { AuthRepository } from '@auth/auth.repository';
+import { Token } from '@auth/dto/token';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,6 @@ export class AuthService {
       await this.authRepository.updateSpotifyToken(user.id, spotifyProfile.token);
       return user;
     } catch (e) {
-      this.logger.error(e);
       if (e instanceof UserNotFoundException) {
         const user = await this.userService.create({
           id: spotifyProfile.userId,
@@ -52,8 +52,21 @@ export class AuthService {
   }
 
   async refresh(reqUser: RequestUser) {
-    const accessToken = await this.getAccessToken(reqUser);
-    return accessToken;
+    return await this.getAccessToken(reqUser);
+  }
+
+  async getSpotifyToken(userId: string) : Promise<Token> {
+    const tokenModel = await this.authRepository.findTokenByUserId(userId);
+
+    return {
+      accessToken: tokenModel.access_token,
+      refreshToken: tokenModel.refresh_token,
+    };
+  }
+
+  async updateSpotifyToken(userId: string, token: Token) {
+    this.logger.log(`updateSpotifyToken ${JSON.stringify(token)}`);
+    await this.authRepository.updateSpotifyToken(userId, token);
   }
 
   private async getAccessToken(payload: RequestUser) {

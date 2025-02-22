@@ -7,7 +7,7 @@ CREATE SCHEMA IF NOT EXISTS member;
 CREATE SCHEMA IF NOT EXISTS auth;
 
 CREATE TABLE IF NOT EXISTS music.info (
-    id          INTEGER                     GENERATED ALWAYS AS IDENTITY,
+    id          VARCHAR(100)    NOT NULL,
     title       VARCHAR(30)     NOT NULL,
     artist      VARCHAR(30)     NOT NULL,
     thumbnail   VARCHAR(100)    NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS member.bundle (
 
 CREATE TABLE IF NOT EXISTS music.bundle_tracks (
     id              INTEGER         NOT NULL    GENERATED ALWAYS AS IDENTITY,
-    music_id        INTEGER         NOT NULL,
+    music_id        VARCHAR(100)    NOT NULL,
     bundle_id       UUID            NOT NULL,
     created_at      TIMESTAMPTZ     NOT NULL    DEFAULT now(),
     updated_at      TIMESTAMPTZ     NOT NULL    DEFAULT now(),

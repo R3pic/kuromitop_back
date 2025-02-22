@@ -12,7 +12,6 @@ import { RequestUser } from '@common/request-user';
 import { routes } from '@common/config/routes';
 
 import { BundleService } from './bundle.service';
-import { AddTrackDto } from './domain/dto/add-track.dto';
 import { CreateBundleDto } from './domain/dto/create-bundle.dto';
 import { CreateBundleBody } from './domain/dto/create-bundle.body';
 import { UpdateBundleDto } from './domain/dto/update-bundle.dto';
@@ -78,13 +77,18 @@ export class BundleController {
   @UseGuards(JwtAuthGuard)
   @Post(routes.bundle.tracks.root)
   @HttpCode(HttpStatus.OK)
-  async add(
-    @UUIDParam('uuid') bundleID: BundleID,
+  async addTrackToBundle(
+    @UUIDParam('uuid') bundleId: BundleID,
     @Body() addTrackBody: AddTrackBody,
     @ReqUser() reqUser: RequestUser
   ) {
-    const addTrackDto = new AddTrackDto(bundleID, addTrackBody, reqUser);
-
-    return await this.bundleService.addTrackToBundle(addTrackDto);
+    return await this.bundleService.addTrackToBundle({
+      bundleId,
+      musicId: addTrackBody.id,
+      title: addTrackBody.title,
+      artist: addTrackBody.artist,
+      thumbnail: addTrackBody.thumbnail,
+      reqUser,
+    });
   }
 }

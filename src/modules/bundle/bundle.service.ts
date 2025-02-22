@@ -89,13 +89,19 @@ export class BundleService {
   @Transactional()
   async addTrackToBundle(addTrackDto: AddTrackDto) {
     this.logger.log(`AddTrackToBundle : ${JSON.stringify(addTrackDto)}`);
-    const bundle = await this.findById(addTrackDto.id);
+    const bundle = await this.findById(addTrackDto.bundleId);
 
     if (bundle.user_id !== addTrackDto.reqUser.id ) {
       throw new BundleForbiddenException();
     }
 
-    return await this.trackService.create(addTrackDto);
+    return await this.trackService.create({
+      bundleId: addTrackDto.bundleId,
+      musicId: addTrackDto.musicId,
+      title: addTrackDto.title,
+      artist: addTrackDto.artist,
+      thumbnail: addTrackDto.thumbnail,
+    });
   }
 
   async findTracksByBundle(uuid: UUID, user: RequestUser | null) {

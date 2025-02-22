@@ -17,6 +17,7 @@
       "@bundle/*": ["src/modules/bundle/*"],
       "@tracks/*": ["src/modules/tracks/*"],
       "@comments/*": ["src/modules/comments/*"],
+      "@spotify/*": ["src/modules/spotify/*"],
       "@test/*": ["test/utils/*"]
     },
     "incremental": true,

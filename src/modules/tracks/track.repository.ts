@@ -59,12 +59,13 @@ export class TrackRepository {
 
   async createMusic(entity: MusicEntity) {
     const query = `
-                    INSERT INTO music.info (title, artist, thumbnail)
-                    VALUES ($1, $2, $3)
+                    INSERT INTO music.info (id, title, artist, thumbnail)
+                    VALUES ($1, $2, $3, $4)
                     RETURNING *
                     `;
         
     const model = await this.txHost.tx.one<MusicModel>(query, [
+      entity.id,
       entity.title,
       entity.artist,
       entity.thumbnail,
@@ -72,23 +73,13 @@ export class TrackRepository {
     return model;
   }
 
-  async findMusicById(trackId: number) {
+  async findMusicById(trackId: string) {
     const query = `
         SELECT *
         FROM music.info
         WHERE id = $1
         `;
     const model = await this.txHost.tx.oneOrNone<MusicModel>(query, [trackId]);
-    return model;
-  }
-
-  async findMusicByTitle(title: string) {
-    const query = `
-        SELECT *
-        FROM music.info
-        WHERE title = $1
-        `;
-    const model = await this.txHost.tx.oneOrNone<MusicModel>(query, [title]);
     return model;
   }
 

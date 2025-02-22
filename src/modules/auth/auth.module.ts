@@ -31,6 +31,6 @@ import { AuthRepository } from '@auth/auth.repository';
     PublicStrategey,
     SpotifyStrategy,
   ],
-  exports: [PassportModule],
+  exports: [AuthService],
 })
 export class AuthModule {}

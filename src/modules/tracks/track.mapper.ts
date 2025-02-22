@@ -37,6 +37,7 @@ export class TrackMapper implements Mapper<
 
   createDtoToMusicEntity(dto: CreateTrackDto): MusicEntity {
     return new MusicEntity.Builder()
+      .setId(dto.musicId)
       .setTitle(dto.title)
       .setArtist(dto.artist)
       .setThumbnail(dto.thumbnail)

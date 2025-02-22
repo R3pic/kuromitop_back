@@ -1,7 +1,7 @@
 import { EntityBuilder } from '@common/base/entity-builder.base';
 import { BaseEntity } from '@common/base/entity.base';
 
-class MusicEntityBuilder extends EntityBuilder<MusicEntity> {
+class MusicEntityBuilder extends EntityBuilder<MusicEntity, string> {
   constructor() {
     super(MusicEntity);
   }
@@ -16,13 +16,13 @@ class MusicEntityBuilder extends EntityBuilder<MusicEntity> {
     return this;
   }
 
-  setThumbnail(thmubnail: string) {
-    this._entity.thumbnail = thmubnail;
+  setThumbnail(thumbnail: string) {
+    this._entity.thumbnail = thumbnail;
     return this;
   }
 }
 
-export class MusicEntity extends BaseEntity {
+export class MusicEntity extends BaseEntity<string> {
   title: string;
   artist: string;
   thumbnail: string;

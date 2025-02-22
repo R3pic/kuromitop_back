@@ -6,6 +6,7 @@ import { isDataBaseError } from '@common/utils/exception-utils';
 import { RequestUser } from '@common/request-user';
 import { BundleID } from '@bundle/domain/model/bundle.model';
 import { CommentsService } from '@comments/comments.service';
+import { SpotifyService } from '@spotify/spotify.service';
 
 import { TrackRepository } from './track.repository';
 import { TrackMapper } from './track.mapper';
@@ -15,8 +16,9 @@ import { CreateTrackDto } from './domain/dto/create-music.dto';
 import { RemoveTrackDto } from './domain/dto/remove-track.dto';
 import { AddCommentDto } from './domain/dto/add-comment.dto';
 import {
-  TrackAlreadyInBundleException, TrackForbiddenException, TrackNotFoundException, 
+  TrackAlreadyInBundleException, TrackForbiddenException, TrackNotFoundException,
 } from './track.errors';
+import { SpotifyTokenExpiredException } from '@spotify/spotify.errors';
 
 @Injectable()
 export class TrackService {
@@ -26,13 +28,14 @@ export class TrackService {
     private readonly trackRepository: TrackRepository,
     private readonly mapper: TrackMapper,
     private readonly commentsService: CommentsService,
+    private readonly spotifyService: SpotifyService,
   ) {}
 
   @Transactional()
   async create(createTrackDto: CreateTrackDto) {
-    this.logger.log(`트랙 추가 요청 Dto : ${JSON.stringify(createTrackDto)}`);
+    this.logger.log(createTrackDto);
     try {
-      let music = await this.trackRepository.findMusicByTitle(createTrackDto.title);
+      let music = await this.trackRepository.findMusicById(createTrackDto.musicId);
 
       if (music === null) {
         const entity = this.mapper.createDtoToMusicEntity(createTrackDto);
@@ -43,7 +46,7 @@ export class TrackService {
 
       const trackEntity = new TrackEntity.Builder()
         .setMusicId(musicId)
-        .setBundleId(createTrackDto.id)
+        .setBundleId(createTrackDto.bundleId)
         .build();
 
       return await this.trackRepository.create(trackEntity);
@@ -132,5 +135,16 @@ export class TrackService {
       },
       comments,
     };
+  }
+
+  async search(q: string, reqUser: RequestUser) {
+    try {
+      return this.spotifyService.search(q, reqUser);
+    } catch (e) {
+      if (e instanceof SpotifyTokenExpiredException) {
+        await this.spotifyService.refreshSpotifyToken(e.token.refreshToken, reqUser);
+      }
+      return null;
+    }
   }
 }

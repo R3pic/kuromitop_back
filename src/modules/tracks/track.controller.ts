@@ -1,7 +1,8 @@
 import {
   Controller, Get, Post, Param, Body,
-  UseGuards, HttpCode, HttpStatus, ParseIntPipe, Delete,
+  UseGuards, HttpCode, HttpStatus, ParseIntPipe, Delete, Query, Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 
 import { JwtAuthGuard, OptionalAuthGuard } from '@common/guard/auth.guard';
 import { ReqUser } from '@common/decorator/req-user.decorator';
@@ -58,5 +59,28 @@ export class TrackController {
       trackId,
       reqUser,
     });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(routes.track.search)
+  @HttpCode(HttpStatus.OK)
+  async searchTrack(
+    @Query('q') q: string,
+    @ReqUser() reqUser: RequestUser,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tracks = await this.trackService.search(q, reqUser);
+    console.log(tracks);
+    if (!tracks) {
+      res.status(HttpStatus.UNPROCESSABLE_ENTITY);
+      return {
+        message: '다시 시도해주세요.',
+      };
+    } else {
+      return {
+        tracks,
+      };
+    }
+
   }
 }

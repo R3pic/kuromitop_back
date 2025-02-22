@@ -2,7 +2,10 @@ import { UUID } from 'crypto';
 import { BaseEntity } from './entity.base';
 import { Builder } from './builder.interface';
 
-export abstract class EntityBuilder<T extends BaseEntity<any>, K extends number | UUID = number> implements Builder<T> {
+export abstract class EntityBuilder<
+  T extends BaseEntity<any>,
+  K extends number | UUID | string = number,
+> implements Builder<T> {
   protected _entity: T;
 
   constructor(TConstructor: (new() => T)) {

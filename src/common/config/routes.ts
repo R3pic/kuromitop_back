@@ -31,6 +31,7 @@ export const routes = {
     detail: '/:trackid',
     recentComments: '/recent-comments',
     comments: `/:trackid/${commentRoot}`,
+    search: '/search',
   },
   comment: {
     root: `${commentRoot}`,

@@ -5,11 +5,13 @@ import { TrackService } from './track.service';
 import { TrackRepository } from './track.repository';
 import { TrackMapper } from './track.mapper';
 import { CommentsModule } from '@comments/comments.module';
+import { SpotifyModule } from '@spotify/spotify.module';
 
 @Module({
   imports: [
     PostgresModule,
     CommentsModule,
+    SpotifyModule,
   ],
   exports: [TrackService],
   controllers: [TrackController],
